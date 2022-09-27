@@ -63,8 +63,11 @@ https://leonid-tkach.shinyapps.io/order-book-plots/
 There is only this there for now.
 
 - OBPTDVOLRATIO - ob-plot volume / trade day buy/sell volume during ob-plot
+![](./analysis/OBPTDVOLRATIO.png)
 - BUYSELLYIELD - difference between buy end sell trade yield in a ob-plot
+![](./analysis/BUYSELLYIELD.png)
 - MINMAX - max(TRADEPRICE) - min(TRADEPRICE) during an ob-plot.
+![](./analysis/MINMAXRATIO.png)
 
 I am not sure if the result is good. I may become more clear in trade day dynamics pictures similar to the ones we just saw.
 
