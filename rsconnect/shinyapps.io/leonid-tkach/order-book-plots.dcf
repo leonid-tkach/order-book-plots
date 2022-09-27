@@ -1,0 +1,14 @@
+name: order-book-plots
+title: order-book-plots
+username:
+account: leonid-tkach
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7131405
+bundleId: 6341995
+url: https://leonid-tkach.shinyapps.io/order-book-plots/
+when: 1664261945.85455
+lastSyncTime: 1664261945.85456
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: README.md
