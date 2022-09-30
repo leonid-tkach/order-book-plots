@@ -1,0 +1,124 @@
+---
+title: "OBPlots"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+obp_dynatts_df <- read_csv("resources/3_obp_dynatts_df.csv")
+obp_dynatts_df
+```
+
+```{r}
+OBPlots_df <- read_csv("resources/2_OBPlots_df.csv")
+OBPlots_df
+```
+
+```{r}
+obp_dynatts_no_df <- left_join(obp_dynatts_df, 
+                            OBPlots_df %>% select(NO, TIME), 
+                            by = "NO") %>% 
+  mutate(TIMEm = as.character(as.integer(TIME / 100000)),
+         TIME = as.character(TIME / 1000)) %>% 
+  select(NO, SECCODE, DATETIMEMLLS, DATE, TIME, TIMEm, OBPLOTNO, 
+         ATT, VAL, SHAREBAL, BPROFIT, SPROFIT, OBPMINTPRICE, OBPMAXTPRICE,
+         CBOVOLtdcs, CSOVOLtdcs, BOVOLtdcs, SOVOLtdcs, BTVOLtdcs, STVOLtdcs,
+         CBOVOLobpcs, CSOVOLobpcs, BOVOLobpcs, SOVOLobpcs, BTVOLobpcs, STVOLobpcs)
+obp_dynatts_no_df
+```
+
+```{r}
+obp_dynatts_no_price_df <- left_join(obp_dynatts_no_df, 
+                                     OBPlots_df %>% select(NO, PRICE, TRADEPRICE), 
+                                     by="NO")
+obp_dynatts_no_price_df
+```
+
+```{r}
+temp_df <- obp_dynatts_no_df %>% 
+  spread(key = ATT, value = VAL) %>% 
+  select(TIME, TIMEm, NO, OBPLOTNO, SOVOL, SOVOLtdcs, SOVOLobpcs)
+  # filter(OBPLOTNO == 129)
+temp_df
+```
+
+```{r}
+ggplot(data = temp_df) + 
+  # geom_point(mapping = aes(x = NO, y = SOVOL), color = "red") +
+  # geom_point(mapping = aes(x = NO, y = SOVOLtdcs), color = "green") +
+  geom_point(mapping = aes(x = NO, y = SOVOLobpcs), color = "blue")
+```
+
+```{r}
+# sm - val median by second
+
+temp_sm_df <- temp_df %>% 
+  group_by(TIMEm) %>% 
+  summarise(SOVOLobpcs = median(SOVOLobpcs))
+temp_sm_df
+```
+
+
+```{r}
+ggplot(data = temp_sm_df) + 
+  geom_point(mapping = aes(x = TIMEm, y = SOVOLobpcs), color = "blue")
+```
+
+```{r}
+obp_atts_by_obp_df <- read_csv("resources/4_obp_atts_by_obp_df.csv")
+obp_atts_by_obp_df
+```
+
+```{r}
+obp_atts_by_obp_df %>% arrange(desc(OBPTDVOLRATIO))
+```
+
+
+```{r}
+curplotno = 37173
+
+pbegin <- obp_dynatts_no_price_df %>% 
+  filter(OBPLOTNO == curplotno) %>% 
+  .$DATETIMEMLLS %>% 
+  min(.)
+
+pend <- obp_dynatts_no_price_df %>% 
+  filter(OBPLOTNO == curplotno) %>% 
+  .$DATETIMEMLLS %>% 
+  max(.)
+
+pcolor <- function(att, plotno) {
+  color = ""
+  if (plotno == curplotno) {
+    if (att == 'BOVOL') color = "green"
+    else if (att == 'SOVOL') color = "red"
+    else if (att == 'BTVOL' | att == 'STVOL') color = "blue"
+    else color = "white"
+  } else {
+    if (att == 'BOVOL') color = "aquamarine"
+    else if (att == 'SOVOL') color = "coral"
+    else if (att == 'BTVOL' | att == 'STVOL') color = "cadetblue1"
+    else color = "white"
+  }
+  # print(paste(att, plotno, color))
+  return(color)
+}
+plot_df <- obp_dynatts_no_price_df %>% 
+  filter((DATETIMEMLLS >= pbegin & DATETIMEMLLS <= pend) & (ATT == "BOVOL" | ATT == "SOVOL" | ATT == "BTVOL" | ATT == "STVOL")) %>% 
+  mutate(pcolor = map2(ATT, OBPLOTNO, ~pcolor(.x, .y)) %>% unlist())
+plot_df
+```
+
+
+```{r}
+ggplot(data = plot_df) + 
+  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor) +
+  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor) +
+  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor) +
+  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor)
+```
+

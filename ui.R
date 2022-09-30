@@ -3,5 +3,5 @@ library(tidyverse)
 library(plotly)
 
 fluidPage(
-  plotlyOutput("obp_atts_plot")
+  plotlyOutput("obp_atts_plot") #, height=1000)
 )
