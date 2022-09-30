@@ -1,5 +1,6 @@
 # simple run.R
 library(shiny)
+library(tidyverse)
 
 # Gets the port # from Heroku
 port <- Sys.getenv("PORT")
