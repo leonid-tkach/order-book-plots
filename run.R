@@ -21,16 +21,16 @@ RunHerokuApp <- function() {
     APP_URL <- "http://localhost:8100/"
     
     # (2) Note that secret is not really secret, and it's fine to include inline
-    app <- oauth_app("shiny-local-app",
-                     key = "51d46f96810d1fd182a2",
-                     secret = "66eec8782825eeb61007dbef32f91afc9c3587aa",
+    app <- oauth_app("authorize",
+                     key = "9a63d566689b4557dadb",
+                     secret = "42dafc53d842b1c548eda9e5f79d5b74323eb4e9",
                      redirect_uri = APP_URL
     )
   } else {
     setwd("/app")
     
     # deployed URL and token
-    APP_URL <- "https://my-app-name.herokuapp.com/" # NOTE: SET THIS TO YOUR APP'S URL
+    APP_URL <- "https://order-book-plots.herokuapp.com/" # NOTE: SET THIS TO YOUR APP'S URL
     
     # (2) Note that secret is not really secret, and it's fine to include inline
     # NOTE: SET THIS BASED ON YOUR GITHUB APP.
