@@ -34,9 +34,9 @@ RunHerokuApp <- function() {
     
     # (2) Note that secret is not really secret, and it's fine to include inline
     # NOTE: SET THIS BASED ON YOUR GITHUB APP.
-    app <- oauth_app("my-heroku-app",
-                     key = "MY_APP_ID",
-                     secret = "MY_SECRET_KEY",
+    app <- oauth_app("authorize",
+                     key = "9a63d566689b4557dadb",
+                     secret = "42dafc53d842b1c548eda9e5f79d5b74323eb4e9",
                      redirect_uri = APP_URL
     )
   }
