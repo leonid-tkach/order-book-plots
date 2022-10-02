@@ -51,7 +51,8 @@ RunHerokuApp <- function() {
   # Shiny -------------------------------------------------------------------
   
   # Bring in the server.R and ui.R objects
-  source("app.R")
+  source("server.R")
+  source("ui.R")
   
   has_auth_code <- function(params) {
     # params is a list object containing the parsed URL parameters. Return TRUE if
