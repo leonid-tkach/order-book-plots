@@ -17,13 +17,14 @@ RunHerokuApp <- function() {
   
   if (interactive()) {
     # testing url and token
+    browser()
     options(shiny.port = 8100)
     APP_URL <- "http://localhost:8100/"
     
     # (2) Note that secret is not really secret, and it's fine to include inline
     app <- oauth_app("authorize",
-                     key = "9a63d566689b4557dadb",
-                     secret = "42dafc53d842b1c548eda9e5f79d5b74323eb4e9",
+                     key = "51d46f96810d1fd182a2",
+                     secret = "66eec8782825eeb61007dbef32f91afc9c3587aa",
                      redirect_uri = APP_URL
     )
   } else {
