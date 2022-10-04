@@ -81,15 +81,23 @@ obp_atts_by_obp_df %>% arrange(desc(OBPTDVOLRATIO))
 ```{r}
 curplotno = 37173
 
+# pbegin <- obp_dynatts_no_price_df %>% 
+#   filter(OBPLOTNO == curplotno) %>% 
+#   .$DATETIMEMLLS %>% 
+#   min(.)
 pbegin <- obp_dynatts_no_price_df %>% 
-  filter(OBPLOTNO == curplotno) %>% 
   .$DATETIMEMLLS %>% 
   min(.)
+print(pbegin)
 
+# pend <- obp_dynatts_no_price_df %>% 
+#   filter(OBPLOTNO == curplotno) %>% 
+#   .$DATETIMEMLLS %>% 
+#   max(.)
 pend <- obp_dynatts_no_price_df %>% 
-  filter(OBPLOTNO == curplotno) %>% 
   .$DATETIMEMLLS %>% 
-  max(.)
+  max(.) 
+print(pend)
 
 pcolor <- function(att, plotno) {
   color = ""
@@ -99,16 +107,16 @@ pcolor <- function(att, plotno) {
     else if (att == 'BTVOL' | att == 'STVOL') color = "blue"
     else color = "white"
   } else {
-    if (att == 'BOVOL') color = "aquamarine"
-    else if (att == 'SOVOL') color = "coral"
-    else if (att == 'BTVOL' | att == 'STVOL') color = "cadetblue1"
+    if (att == 'BOVOL') color = "green"#"aquamarine"
+    else if (att == 'SOVOL') color = "red"#"coral"
+    else if (att == 'BTVOL' | att == 'STVOL') color = "blue" #"cadetblue1"
     else color = "white"
   }
   # print(paste(att, plotno, color))
   return(color)
 }
 plot_df <- obp_dynatts_no_price_df %>% 
-  filter((DATETIMEMLLS >= pbegin & DATETIMEMLLS <= pend) & (ATT == "BOVOL" | ATT == "SOVOL" | ATT == "BTVOL" | ATT == "STVOL")) %>% 
+  filter((DATETIMEMLLS >= pbegin & DATETIMEMLLS <= pend) & (ATT == "BOVOL" | ATT == "SOVOL" | ATT == "BTVOL" | ATT == "STVOL") & PRICE > 2145.0 & PRICE < 2195.0) %>%
   mutate(pcolor = map2(ATT, OBPLOTNO, ~pcolor(.x, .y)) %>% unlist())
 plot_df
 ```
@@ -116,9 +124,6 @@ plot_df
 
 ```{r}
 ggplot(data = plot_df) + 
-  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor) +
-  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor) +
-  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor) +
-  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor)
+  geom_point(mapping = aes(x = TIME, y = PRICE), color = plot_df$pcolor, shape = 4, size = 0.5)
 ```
 
