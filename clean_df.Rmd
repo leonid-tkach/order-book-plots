@@ -1,0 +1,108 @@
+---
+title: "clean_df"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+## 1. Order Book
+
+```{r}
+raw_1_order_book_df <- read_csv("./resources/raw_1_order_book_df.csv")
+raw_1_order_book_df
+```
+
+```{r}
+order_book_df <- raw_1_order_book_df %>% 
+  filter(SECCODE == 'LKOH') %>% 
+  add_column(DATE = "2007-10-08") %>% 
+  select(NO, SECCODE, BUYSELL, DATE, TIME, ORDERNO, ACTION, 
+         PRICE, VOLUME, TRADENO, TRADEPRICE)
+
+order_book_df
+```
+
+```{r}
+order_book_df %>% write_csv("./resources/1_order_book_df.csv")
+```
+
+
+## 2. Order-Book Plots
+
+```{r}
+raw_2_OBPlots_df.csv <- read_csv("./resources/raw_2_OBPlots_df.csv")
+raw_2_OBPlots_df.csv
+```
+
+```{r}
+OBPlots_df <- raw_2_OBPlots_df.csv %>% 
+  select(-1) %>% 
+  select(NO, SECCODE, BUYSELL, DATE, TIME, ORDERNO, ACTION, 
+         PRICE, VOLUME, TRADENO, TRADEPRICE, OBPLOTNO)
+OBPlots_df
+```
+
+```{r}
+OBPlots_df %>% write_csv("./resources/2_OBPlots_df.csv")
+```
+
+## 3. Order-Book-Plot Dynamic Attributes
+
+```{r}
+raw_3_obp_dynatts_df <- read_csv("./resources/raw_3_obp_dynatts_df.csv")
+raw_3_obp_dynatts_df
+```
+
+```{r}
+obp_dynatts_df <- raw_3_obp_dynatts_df %>% 
+  select(-1, -2) %>% 
+  select(NO, SECCODE, DATETIMEMLLS, DATE, OBPLOTNO, 
+         ATT, VAL, SHAREBAL, BPROFIT, SPROFIT, OBPMINTPRICE, OBPMAXTPRICE,
+         CBOVOLtdcs, CSOVOLtdcs, BOVOLtdcs, SOVOLtdcs, BTVOLtdcs, STVOLtdcs,
+         CBOVOLobpcs, CSOVOLobpcs, BOVOLobpcs, SOVOLobpcs, BTVOLobpcs, STVOLobpcs)
+
+obp_dynatts_df
+```
+
+```{r}
+obp_dynatts_df %>% write_csv("./resources/3_obp_dynatts_df.csv")
+```
+
+## 4. Order-Book-Plot Attributes
+
+```{r}
+raw_4_obp_atts_by_obp_df <- read_csv("./resources/raw_4_obp_atts_by_obp_df.csv")
+raw_4_obp_atts_by_obp_df
+```
+
+```{r}
+obp_atts_by_obp_df <- raw_4_obp_atts_by_obp_df %>% 
+  select(-1)
+
+obp_atts_by_obp_df
+```
+
+```{r}
+obp_atts_by_obp_df %>% write_csv("./resources/4_obp_atts_by_obp_df.csv")
+```
+
+## 5. Order-Book Plots Grouped by Attributes
+
+```{r}
+raw_5_obp_grouped_by_atts_df <- read_csv("./resources/raw_5_obp_grouped_by_atts_df.csv")
+raw_5_obp_grouped_by_atts_df
+```
+
+```{r}
+obp_grouped_by_atts_df <- raw_5_obp_grouped_by_atts_df %>% 
+  select(-1, -`Unnamed: 0`)
+
+obp_grouped_by_atts_df
+```
+
+```{r}
+obp_grouped_by_atts_df %>% write_csv("./resources/5_obp_grouped_by_atts_df.csv")
+```
+
