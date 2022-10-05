@@ -181,11 +181,6 @@ ggplot() +
 ```
 
 ```{r}
-td_df %>% filter(ATT != "BTVOL" & ATT != "STVOL")
-```
-
-
-```{r}
 dt11 <- plot_df %>% filter(OBPLOTNO != curplotno & ATT != "BTVOL" & ATT != "STVOL")
 dt12 <- plot_df %>% filter(OBPLOTNO != curplotno & (ATT == "BTVOL" | ATT == "STVOL"))
 dt21 <- plot_df %>% filter(OBPLOTNO == curplotno & ATT != "BTVOL" & ATT != "STVOL")
