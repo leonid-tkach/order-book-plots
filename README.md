@@ -1,5 +1,7 @@
 # order-book-plots
 
+Amazon Lightsail server: http://3.223.119.154:3838/
+
 --- Most of my code is currently here: ---
 
 https://github.com/leonid-tkach/order-book-plot-find
