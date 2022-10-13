@@ -105,4 +105,3 @@ obp_grouped_by_atts_df
 ```{r}
 obp_grouped_by_atts_df %>% write_csv("./resources/5_obp_grouped_by_atts_df.csv")
 ```
-

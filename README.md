@@ -58,9 +58,9 @@ I only excluded OB-plots without any trades. Every dot is an ob-plot.
 
 ![](./analysis/ob-plot-groups.png)
 
-Here is the link to R Shiny. 
+Here is the link to my R-Shiny app. 
 
-https://leonid-tkach.shinyapps.io/order-book-plots/
+http://3.223.119.154:3838/order-book-plots/
 
 There is only this there for now.
 
