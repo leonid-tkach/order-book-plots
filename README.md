@@ -40,7 +40,7 @@ OB-plot 1|OB-plot 2
 ![](./analysis/2007-10-08_012.jpg)|![](./analysis/2007-10-08_022.jpg)
 ![](./analysis/2007-10-08_013.jpg)|![](./analysis/2007-10-08_023.jpg)
 
-## Some statistical characteristics os the plots
+## Some statistical characteristics of the plots
 
 If we split ob-plots on ten groups by volume of *an ob-plot*, group volume shows that the smallest ob-plots give collectively  most of the trade day volume, not the biggest ones in the pictures above.
 
