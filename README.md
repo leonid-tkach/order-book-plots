@@ -82,9 +82,3 @@ I use the algorithm for searching connected components from this book: https://a
 See this j-notebook: http://localhost:8888/notebooks/Documents/GWU/final_project/order-book-plot-find/OrderBookPlots.ipynb
 
 All other ipynb-files in the repository use this one.
-
-## Wednesday, September 28
-
-I hope to provide interactive R-Shiny illustrations by then.
-
-Sorry for the mess.

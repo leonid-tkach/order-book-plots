@@ -113,7 +113,9 @@ td_df
 ```
 
 ```{r}
-curplotno = 302
+# curplotno = 302
+# curplotno = 1869
+curplotno = 52
 
 pbegin <- obp_dynatts_no_price_df %>%
   filter(OBPLOTNO == curplotno) %>%
