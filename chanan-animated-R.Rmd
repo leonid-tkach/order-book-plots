@@ -1,0 +1,49 @@
+---
+title: "chanan animated R"
+output: html_notebook
+---
+
+https://towardsdatascience.com/how-to-create-animated-plots-in-r-adf53a775961
+
+```{r}
+library(gapminder)
+library(ggplot2)
+library(gganimate)
+library(gifski)
+```
+
+```{r}
+gapminder
+```
+
+```{r}
+
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+   geom_point(alpha = 0.7, show.legend = FALSE) +
+   scale_colour_manual(values = country_colors) +
+   scale_size(range = c(2, 12)) +
+   scale_x_log10() +
+   facet_wrap(~continent) +
+   labs(title = 'Year: 1952-2007', x = 'GDP per capita', y = 'Life expectancy')
+```
+
+```{r}
+ggsave('./2gif/plot_gdpPercap_lifeExp_static.png', width=8, height=8)
+```
+
+```{r}
+p1 <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+             geom_point(alpha = 0.7, show.legend = FALSE) +
+             scale_colour_manual(values = country_colors) +
+             scale_size(range = c(2, 12)) +
+             scale_x_log10() +
+             facet_wrap(~continent) +
+             # Animating the plot
+             labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life expectancy') +
+             transition_time(year) +
+             ease_aes('linear')
+
+animate(p1)
+anim_save('./2gif/plot_gdpPercap_lifeExp.gif')
+```
+
