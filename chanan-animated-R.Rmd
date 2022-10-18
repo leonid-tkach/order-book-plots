@@ -1,0 +1,145 @@
+---
+title: "chanan animated R"
+output: html_notebook
+---
+
+https://towardsdatascience.com/how-to-create-animated-plots-in-r-adf53a775961
+
+```{r}
+library(gapminder)
+library(ggplot2)
+library(gganimate)
+library(gifski)
+library(av)
+```
+
+```{r}
+gapminder
+```
+
+```{r}
+
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+   geom_point(alpha = 0.7, show.legend = FALSE) +
+   scale_colour_manual(values = country_colors) +
+   scale_size(range = c(2, 12)) +
+   scale_x_log10() +
+   facet_wrap(~continent) +
+   labs(title = 'Year: 1952-2007', x = 'GDP per capita', y = 'Life expectancy')
+```
+
+```{r}
+ggsave('./2gif/plot_gdpPercap_lifeExp_static.png', width=8, height=8)
+```
+
+```{r}
+p1 <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+             geom_point(alpha = 0.7, show.legend = FALSE) +
+             scale_colour_manual(values = country_colors) +
+             scale_size(range = c(2, 12)) +
+             scale_x_log10() +
+             facet_wrap(~continent) +
+             # Animating the plot
+             labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life expectancy') +
+             transition_time(year) +
+             ease_aes('linear')
+
+animate(p1)
+anim_save('./2gif/plot_gdpPercap_lifeExp.gif')
+```
+
+```{r}
+p <- ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_point()
+
+plot(p)
+```
+
+```{r}
+anim <- p + 
+  transition_states(Species,
+                    transition_length = 2,
+                    state_length = 1)
+anim
+```
+
+```{r}
+anim + 
+  ease_aes('cubic-in-out') # Slow start and end for a smoother look
+```
+
+```{r}
+anim + 
+  ease_aes(y = 'bounce-out') # Sets special ease for y aesthetic
+```
+
+```{r}
+anim + 
+  ggtitle('Now showing {closest_state}',
+          subtitle = 'Frame {frame} of {nframes}')
+```
+
+```{r}
+ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_line(aes(group = rep(1:50, 3)), colour = 'grey') + 
+  geom_point()
+```
+
+```{r}
+ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_point(aes(colour = Species)) + 
+  transition_states(Species,
+                    transition_length = 2,
+                    state_length = 1)
+```
+
+```{r}
+ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_point(aes(group = seq_along(Species))) + 
+  transition_states(Species,
+                    transition_length = 2,
+                    state_length = 1)
+```
+
+```{r}
+ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_point(aes(colour = Species, group = 1L)) + 
+  transition_states(Species,
+                    transition_length = 2,
+                    state_length = 1)
+```
+
+```{r}
+anim <- ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_point(aes(colour = Species), size = 2) + 
+  transition_states(Species,
+                    transition_length = 2,
+                    state_length = 1)
+
+anim + 
+  enter_fade() + 
+  exit_shrink()
+```
+
+```{r}
+anim + 
+  enter_fade() + enter_drift(x_mod = -1) + 
+  exit_shrink() + exit_drift(x_mod = 5)
+```
+
+```{r}
+# Video output
+animate(
+  anim + enter_fade() + exit_fly(y_loc = 1),
+  renderer = av_renderer()
+)
+```
+
+```{r}
+# Different size and resolution
+animate(
+  anim + ease_aes(x = 'bounce-out') + enter_fly(x_loc = -1) + exit_fade(),
+  width = 400, height = 600, res = 35
+)
+```
+

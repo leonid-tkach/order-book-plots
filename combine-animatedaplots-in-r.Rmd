@@ -1,0 +1,170 @@
+---
+title: "Combine Animated Plots in R"
+output: html_notebook
+---
+
+https://towardsdatascience.com/how-to-combine-animated-plots-in-r-734c6c952315
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(ggtext)
+library(gifski)
+library(gganimate)
+# library(cr)
+library(ggalt)
+library(magick)
+
+# set_cr_theme(font = "Proxima Nova")
+theme_set(theme_minimal())
+```
+
+```{r}
+
+ipf_lifts <- readr::read_csv("./resources/ipf_lifts.csv") %>%
+  mutate(year = lubridate::year(date))
+ipf_lifts
+```
+
+```{r}
+ipf_lifts_reshape <- ipf_lifts %>% 
+  tidyr::pivot_longer(cols = c("best3squat_kg", "best3bench_kg", "best3deadlift_kg"), names_to = "lift") %>% 
+  select(name, sex, year, lift, value)
+ipf_lifts_reshape
+```
+
+```{r}
+ipf_lifts_maxes <- ipf_lifts_reshape %>% 
+  group_by(year, sex, lift) %>% 
+  top_n(1, value) %>% 
+  ungroup %>% 
+  distinct(year, lift, value, .keep_all = TRUE)
+ipf_lifts_maxes
+```
+
+```{r}
+max_pivot <- ipf_lifts_maxes %>% 
+  spread(sex, value)
+max_pivot
+```
+
+```{r}
+
+male_lifts <- max_pivot %>% 
+  select(-name) %>% 
+  filter(!is.na(M)) %>% 
+  group_by(year, lift) %>% 
+  summarise(male = mean(M))
+male_lifts
+```
+
+```{r}
+female_lifts <- max_pivot %>% 
+  select(-name) %>% 
+  filter(!is.na(F)) %>% 
+  group_by(year, lift) %>% 
+  summarise(female = mean(F))
+female_lifts
+```
+
+```{r}
+
+max_lifts <- merge(male_lifts, female_lifts)
+max_lifts_final <- max_lifts %>% 
+  group_by(year, lift) %>% 
+  mutate(diff = male - female)
+max_lifts_final
+```
+
+```{r}
+static <- max_lifts_final %>% 
+  # filter(year == 2019) %>% 
+  ggplot() + 
+  ggalt::geom_dumbbell(aes(y = lift,
+                    x = female, xend = male),
+                colour = "grey", size = 5,
+                colour_x = "#D6604C", colour_xend = "#395B74") +
+  labs(y = element_blank(),
+       x = "Top Lift Recorded (kg)",
+       title =  "How <span style='color:#D6604C'>Women</span> and <span style='color:#395B74'>Men</span> Differ in Top Lifts",
+       subtitle = "In 2019") +
+  theme(plot.title = element_markdown(lineheight = 1.1, size = 20),
+        plot.subtitle = element_text(size = 15)) +
+  scale_y_discrete(labels = c("Bench", "Deadlift", "Squat")) +
+  # drop_axis(axis = "y") +
+  geom_text(aes(x = female, y = lift, label = paste(female, "kg")),
+            color = "#D6604C", size = 4, vjust = -2) +
+  geom_text(aes(x = male, y = lift, label = paste(male, "kg")),
+            color = "#395B74", size = 4, vjust = -2) +
+  geom_rect(aes(xmin=430, xmax=470, ymin=-Inf, ymax=Inf), fill="grey80") +
+  geom_text(aes(label=diff, y=lift, x=450), size=4) +
+  geom_text(aes(x=450, y=3, label="Difference"),
+            color="grey20", size=4, vjust=-3)
+static
+```
+
+```{r}
+animation <- static +
+  transition_states(year, transition_length = 4, state_length = 1) +
+  ease_aes('cubic-in-out')
+animation
+```
+
+```{r}
+a_gif <- animate(animation, 
+                 fps = 10, 
+                 duration = 25,
+                 width = 800, height = 400, 
+                 renderer = gifski_renderer("./2gif/animation.gif"))
+a_gif
+```
+
+```{r}
+
+animation2 <- max_lifts_final %>% 
+  ungroup %>% 
+  mutate(lift = case_when(lift == "best3bench_kg" ~ "Bench",
+                          lift == "best3squat_kg" ~ "Squat",
+                          lift == "best3deadlift_kg" ~ "Deadlift")) %>% 
+  ggplot(aes(year, diff, group = lift, color = lift)) + 
+  geom_line(show.legend = FALSE) + 
+  geom_segment(aes(xend = 2019.1, yend = diff), linetype = 2, colour = 'grey', show.legend = FALSE) + 
+  geom_point(size = 2, show.legend = FALSE) + 
+  geom_text(aes(x = 2019.1, label = lift, color = "#000000"), hjust = 0, show.legend = FALSE) + 
+  # drop_axis(axis = "y") +
+  transition_reveal(year) +
+  coord_cartesian(clip = 'off') +
+  theme(plot.title = element_text(size = 20)) +
+  labs(title = 'Difference over time',
+       y = 'Difference (kg)',
+       x = element_blank()) + 
+  theme(plot.margin = margin(5.5, 40, 5.5, 5.5))
+animation2
+```
+
+```{r}
+b_gif <- animate(animation2, 
+                 fps = 10, 
+                 duration = 25,
+        width = 800, height = 200, 
+        renderer = gifski_renderer("./2gif/animation2.gif"))
+
+b_gif
+```
+
+```{r}
+a_mgif <- image_read(a_gif)
+b_mgif <- image_read(b_gif)
+
+new_gif <- image_append(c(a_mgif[1], b_mgif[1]), stack = TRUE)
+for(i in 2:172){
+  combined <- image_append(c(a_mgif[i], b_mgif[i]), stack = TRUE)
+  new_gif <- c(new_gif, combined)
+}
+new_gif
+```
+
+```{r}
+new_gif %>% anim_save("./2gif/gifs_in _one.ig")
+```
+
