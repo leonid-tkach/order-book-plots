@@ -5,6 +5,7 @@ output: html_notebook
 
 ```{r}
 library(tidyverse)
+library(gganimate)
 ```
 
 
@@ -196,5 +197,38 @@ ggplot() +
              color = dt21$pcolor, shape = dt21$pshape, size = dt21$psize) + 
   geom_point(data = dt22, mapping = aes(x = TIME, y = PRICE), 
              color = dt22$pcolor, shape = dt22$pshape, size = dt22$psize)
+```
+
+```{r}
+td_first_30minute_df <- td_df %>% 
+  filter(TIME < 1100000)
+td_first_30minute_df
+```
+
+```{r}
+static_plot <- ggplot() + 
+  geom_point(data = td_first_30minute_df, 
+             mapping = aes(x = TIME, y = PRICE), 
+             color = td_first_30minute_df$pcolor, 
+             shape = 4, 
+             size = 0.5)
+static_plot
+```
+
+```{r}
+animation <- static_plot +
+  transition_states(NO, transition_length = 1, state_length = 1) +
+  ease_aes('linear') +
+  shadow_mark() +
+  view_follow()
+animation
+```
+
+```{r}
+obp30mins_gif <- animate(animation, 
+                 fps = 10, 
+                 duration = 10,
+                 width = 800, height = 400, 
+                 renderer = gifski_renderer("./2gif/obp30mins.gif"))
 ```
 
