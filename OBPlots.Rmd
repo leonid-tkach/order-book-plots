@@ -258,19 +258,19 @@ dens_plot
 
 
 ```{r}
-animation <- static_plot +
-  transition_states(NO, transition_length = 1, state_length = 1) +
-  ease_aes('linear') +
-  shadow_mark() +
-  view_follow()
-animation
+# animation <- static_plot +
+#   transition_states(NO, transition_length = 1, state_length = 1) +
+#   ease_aes('linear') +
+#   shadow_mark() +
+#   view_follow()
+# animation
 ```
 
 ```{r}
-obp30mins_gif <- animate(animation, 
-                 fps = 10, 
-                 duration = 10,
-                 width = 800, height = 400, 
-                 renderer = gifski_renderer("./2gif/obp30mins.gif"))
+# obp30mins_gif <- animate(animation, 
+#                  fps = 10, 
+#                  duration = 10,
+#                  width = 800, height = 400, 
+#                  renderer = gifski_renderer("./2gif/obp30mins.gif"))
 ```
 
