@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 library(gganimate)
+library(ggtern)
 ```
 
 
@@ -200,6 +201,33 @@ ggplot() +
 ```
 
 ```{r}
+dt_s <- plot_df %>% filter(OBPLOTNO != curplotno & ATT == "SOVOL")
+dt_b <- plot_df %>% filter(OBPLOTNO != curplotno & ATT == "BOVOL")
+dt_t <- plot_df %>% filter(OBPLOTNO != curplotno & (ATT == "BTVOL" | ATT == "STVOL"))
+dt_cp_sb <- plot_df %>% filter(OBPLOTNO == curplotno & ATT != "BTVOL" & ATT != "STVOL")
+dt_cp_t <- plot_df %>% filter(OBPLOTNO == curplotno & (ATT == "BTVOL" | ATT == "STVOL"))
+```
+
+```{r}
+ggplot(dt_s, aes(x = NO, y = PRICE)) +
+  stat_density2d(mapping = aes(fill = ..level..), alpha = .5,
+                 geom = "polygon", data = dt_s) + 
+  scale_fill_viridis_c() + 
+  # theme(legend.position = 'none') +
+  scale_fill_distiller(palette = 'Reds')
+```
+
+```{r}
+ggplot(dt_b, aes(x = NO, y = PRICE)) +
+  stat_density2d(mapping = aes(fill = ..level..), alpha = .5,
+                 geom = "polygon", data = dt_b) + 
+  scale_fill_viridis_c() + 
+  # theme(legend.position = 'none') +
+  scale_fill_distiller(palette = 'Greens')
+```
+
+
+```{r}
 td_first_30minute_df <- td_df %>% 
   filter(TIME < 1100000)
 td_first_30minute_df
@@ -214,6 +242,20 @@ static_plot <- ggplot() +
              size = 0.5)
 static_plot
 ```
+
+```{r}
+dens_plot <- ggplot(td_first_30minute_df, aes(x = NO, y = PRICE)) +
+  stat_density2d(aes(fill = ..level..), alpha = .5,
+                 geom = "polygon", data = td_first_30minute_df) + 
+  scale_fill_viridis_c() + 
+  theme(legend.position = 'none')
+dens_plot
+```
+
+```{r}
+
+```
+
 
 ```{r}
 animation <- static_plot +
