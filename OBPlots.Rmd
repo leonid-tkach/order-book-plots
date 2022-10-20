@@ -201,11 +201,14 @@ ggplot() +
 ```
 
 ```{r}
-dt_s <- plot_df %>% filter(OBPLOTNO != curplotno & ATT == "SOVOL")
-dt_b <- plot_df %>% filter(OBPLOTNO != curplotno & ATT == "BOVOL")
-dt_t <- plot_df %>% filter(OBPLOTNO != curplotno & (ATT == "BTVOL" | ATT == "STVOL"))
-dt_cp_sb <- plot_df %>% filter(OBPLOTNO == curplotno & ATT != "BTVOL" & ATT != "STVOL")
-dt_cp_t <- plot_df %>% filter(OBPLOTNO == curplotno & (ATT == "BTVOL" | ATT == "STVOL"))
+# dt_s <- plot_df %>% filter(OBPLOTNO != curplotno & ATT == "SOVOL")
+# dt_b <- plot_df %>% filter(OBPLOTNO != curplotno & ATT == "BOVOL")
+# dt_t <- plot_df %>% filter(OBPLOTNO != curplotno & (ATT == "BTVOL" | ATT == "STVOL"))
+# dt_cp_sb <- plot_df %>% filter(OBPLOTNO == curplotno & ATT != "BTVOL" & ATT != "STVOL")
+# dt_cp_t <- plot_df %>% filter(OBPLOTNO == curplotno & (ATT == "BTVOL" | ATT == "STVOL"))
+dt_s <- plot_df %>% filter(ATT == "SOVOL")
+dt_b <- plot_df %>% filter(ATT == "BOVOL")
+dt_t <- plot_df %>% filter(ATT == "BTVOL" | ATT == "STVOL")
 ```
 
 ```{r}
@@ -224,6 +227,15 @@ ggplot(dt_b, aes(x = NO, y = PRICE)) +
   scale_fill_viridis_c() + 
   # theme(legend.position = 'none') +
   scale_fill_distiller(palette = 'Greens')
+```
+
+
+```{r}
+ggplot(bind_rows(tibble(dt_s, gr = "s"), tibble(dt_b, gr = "b")), aes(x = NO, y = PRICE)) +
+  stat_density2d(geom = "polygon", aes(fill = gr, alpha = ..level..)) + 
+  scale_fill_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
+  geom_point(data = dt_t, mapping = aes(x = NO, y = PRICE), 
+             color = dt_t$pcolor, shape = dt_t$pshape, size = dt_t$psize)
 ```
 
 
