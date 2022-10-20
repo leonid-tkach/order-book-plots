@@ -35,7 +35,7 @@ obp_dynatts_no_df
 
 ```{r}
 obp_dynatts_no_price_df <- left_join(obp_dynatts_no_df, 
-                                     OBPlots_df %>% select(NO, PRICE, TRADEPRICE), 
+                                     OBPlots_df %>% select(NO, PRICE, TRADEPRICE, VOLUME), 
                                      by="NO")
 obp_dynatts_no_price_df
 ```
@@ -168,13 +168,21 @@ psize <- function(att, plotno) {
   return(size)
 }
 
-plot_df <- obp_dynatts_no_price_df %>% 
+plot_df_without_rep_by_vol <- obp_dynatts_no_price_df %>% 
   filter((DATETIMEMLLS >= pbegin & DATETIMEMLLS <= pend) & (ATT == "BOVOL" | ATT == "SOVOL" | ATT == "BTVOL" | ATT == "STVOL") & PRICE > 2145.0 & PRICE < 2205.0) %>%
   mutate(pcolor = map2(ATT, OBPLOTNO, ~pcolor(.x, .y)) %>% unlist(),
          pshape = map2(ATT, OBPLOTNO, ~pshape(.x, .y)) %>% unlist(),
          psize = map2(ATT, OBPLOTNO, ~psize(.x, .y)) %>% unlist())
-plot_df %>% filter(OBPLOTNO == curplotno)
+plot_df_without_rep_by_vol %>% filter(OBPLOTNO == curplotno)
 ```
+
+```{r}
+# plot_df <-  with(plot_df_without_rep_by_vol,
+#                  plot_df_without_rep_by_vol[rep(1:nrow(plot_df_without_rep_by_vol),
+#                                                 as.integer(log(VOLUME, base = 1.01)) + 1),])
+plot_df <-  plot_df_without_rep_by_vol
+```
+
 
 ```{r}
 dt1 <- td_df %>% filter(ATT != "BTVOL" & ATT != "STVOL")
