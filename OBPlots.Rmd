@@ -115,8 +115,8 @@ td_df
 ```
 
 ```{r}
-curplotno = 302
-# curplotno = 1869
+# curplotno = 302
+curplotno = 1869
 # curplotno = 52
 
 pbegin <- obp_dynatts_no_price_df %>%
@@ -134,12 +134,12 @@ pcolor <- function(att, plotno) {
   if (plotno == curplotno) {
     if (att == 'BOVOL') color = "green"
     else if (att == 'SOVOL') color = "red"
-    else if (att == 'BTVOL' | att == 'STVOL') color = "blue"
+    else if (att == 'BTVOL' | att == 'STVOL') color = "#8031A7" #"blue"
     else color = "white"
   } else {
     if (att == 'BOVOL') color = "aquamarine"
     else if (att == 'SOVOL') color = "coral"
-    else if (att == 'BTVOL' | att == 'STVOL') color = "cadetblue1"
+    else if (att == 'BTVOL' | att == 'STVOL') color = "#004481" #"cadetblue1"
     else color = "white"
   }
   # print(paste(att, plotno, color))
@@ -253,15 +253,28 @@ ggplot(bind_rows(tibble(dt_s, gr = "s"), tibble(dt_b, gr = "b")), aes(x = NO, y 
 ```
 
 ```{r}
-ggplot(bind_rows(tibble(dt_s, gr = "s"), tibble(dt_b, gr = "b")), aes(x = NO, y = PRICE)) +
-  stat_density2d(geom = "density2d", aes(color = gr, alpha = ..level..)) + 
-  scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
+ggplot(bind_rows(tibble(dt_b, gr = "s"), tibble(dt_s, gr = "b")), aes(x = NO, y = PRICE)) +
+  stat_density2d(geom = "polygon", aes(fill = gr, alpha = ..level..)) + 
+  scale_fill_manual(values=c("b"="#FF0000", "s"="#00FF00")) +
   geom_point(data = dt_t, mapping = aes(x = NO, y = PRICE), 
              color = dt_t$pcolor, shape = dt_t$pshape, size = dt_t$psize) +
   geom_point(data = dt_cp_sb, mapping = aes(x = NO, y = PRICE), 
              color = dt_cp_sb$pcolor, shape = dt_cp_sb$pshape, size = dt_cp_sb$psize) +
   geom_point(data = dt_cp_t, mapping = aes(x = NO, y = PRICE), 
              color = dt_cp_t$pcolor, shape = dt_cp_t$pshape, size = dt_cp_t$psize)
+```
+
+```{r}
+ggplot(bind_rows(tibble(dt_s, gr = "s"), tibble(dt_b, gr = "b")), aes(x = NO, y = PRICE)) +
+  stat_density2d(geom = "density2d", aes(color = gr)) + 
+  scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
+  geom_point(data = dt_t, mapping = aes(x = NO, y = PRICE), 
+             color = dt_t$pcolor, shape = dt_t$pshape, size = dt_t$psize) +
+  geom_point(data = dt_cp_sb, mapping = aes(x = NO, y = PRICE), 
+             color = dt_cp_sb$pcolor, shape = dt_cp_sb$pshape, size = dt_cp_sb$psize) +
+  geom_point(data = dt_cp_t, mapping = aes(x = NO, y = PRICE), 
+             color = dt_cp_t$pcolor, shape = dt_cp_t$pshape, size = dt_cp_t$psize) +
+  theme_bw()
 ```
 
 ```{r}
