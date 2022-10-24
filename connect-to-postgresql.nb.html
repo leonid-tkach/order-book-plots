@@ -1792,21 +1792,25 @@ pre code {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29uIDwtIERCSTo6ZGJDb25uZWN0KFxuICBSUG9zdGdyZXM6OlBvc3RncmVzKCksXG4gIGRibmFtZSA9IFwiZGJvYnBcIixcbiAgaG9zdCA9IFwibHMtMjdkMDI5ODI1Njk4Y2YxM2QzYWI0OWVlOTI0MjhhNzRhNDEyY2FkNC5jczZxZW14aXpnZXQudXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tXCIsXG4gIHBvcnQgPSA1NDMyLFxuICB1c2VyID0gXCJkYndlYXZlclwiLFxuICBwYXNzd29yZCA9IHJzdHVkaW9hcGk6OmFza0ZvclBhc3N3b3JkKFwiRGF0YWJhc2UgcGFzc3dvcmRcIilcbilcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29uIDwtIERCSTo6ZGJDb25uZWN0KFxuICBSUG9zdGdyZXM6OlBvc3RncmVzKCksXG4gIGRibmFtZSA9IFN5cy5nZXRlbnYoXCJkYm5hbWVcIiksXG4gIGhvc3QgPSBTeXMuZ2V0ZW52KFwiaG9zdFwiKSxcbiAgcG9ydCA9IFN5cy5nZXRlbnYoXCJwb3J0XCIpLFxuICB1c2VyID0gU3lzLmdldGVudihcInVzZXJcIiksXG4gIHBhc3N3b3JkID0gU3lzLmdldGVudihcInBhc3N3b3JkXCIpXG4pXG5gYGAifQ== -->
 <pre class="r"><code>con &lt;- DBI::dbConnect(
   RPostgres::Postgres(),
-  dbname = &quot;dbobp&quot;,
-  host = &quot;ls-27d029825698cf13d3ab49ee92428a74a412cad4.cs6qemxizget.us-east-1.rds.amazonaws.com&quot;,
-  port = 5432,
-  user = &quot;dbweaver&quot;,
-  password = rstudioapi::askForPassword(&quot;Database password&quot;)
+  dbname = Sys.getenv(&quot;dbname&quot;),
+  host = Sys.getenv(&quot;host&quot;),
+  port = Sys.getenv(&quot;port&quot;),
+  user = Sys.getenv(&quot;user&quot;),
+  password = Sys.getenv(&quot;password&quot;)
 )</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IEZBVEFMOiAgcGFzc3dvcmQgYXV0aGVudGljYXRpb24gZmFpbGVkIGZvciB1c2VyIFwiZGJ3ZWF2ZXIsXCJcbkZBVEFMOiAgcGFzc3dvcmQgYXV0aGVudGljYXRpb24gZmFpbGVkIGZvciB1c2VyIFwiZGJ3ZWF2ZXIsXCJcbiJ9 -->
+<pre><code>Error: FATAL:  password authentication failed for user &quot;dbweaver,&quot;
+FATAL:  password authentication failed for user &quot;dbweaver,&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogImNvbm5lY3QtdG8tcG9zdGdyZXNxbCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCmBgYHtyfQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KFJQb3N0Z3JlcykNCmBgYA0KDQpgYGB7cn0NCmNvbiA8LSBEQkk6OmRiQ29ubmVjdCgNCiAgUlBvc3RncmVzOjpQb3N0Z3JlcygpLA0KICBkYm5hbWUgPSAiZGJvYnAiLA0KICBob3N0ID0gImxzLTI3ZDAyOTgyNTY5OGNmMTNkM2FiNDllZTkyNDI4YTc0YTQxMmNhZDQuY3M2cWVteGl6Z2V0LnVzLWVhc3QtMS5yZHMuYW1hem9uYXdzLmNvbSIsDQogIHBvcnQgPSA1NDMyLA0KICB1c2VyID0gImRid2VhdmVyIiwNCiAgcGFzc3dvcmQgPSByc3R1ZGlvYXBpOjphc2tGb3JQYXNzd29yZCgiRGF0YWJhc2UgcGFzc3dvcmQiKQ0KKQ0KYGBgDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogImNvbm5lY3QtdG8tcG9zdGdyZXNxbCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCmBgYHtyfQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KFJQb3N0Z3JlcykNCmBgYA0KDQpgYGB7cn0NCmNvbiA8LSBEQkk6OmRiQ29ubmVjdCgNCiAgUlBvc3RncmVzOjpQb3N0Z3JlcygpLA0KICBkYm5hbWUgPSBTeXMuZ2V0ZW52KCJkYm5hbWUiKSwNCiAgaG9zdCA9IFN5cy5nZXRlbnYoImhvc3QiKSwNCiAgcG9ydCA9IFN5cy5nZXRlbnYoInBvcnQiKSwNCiAgdXNlciA9IFN5cy5nZXRlbnYoInVzZXIiKSwNCiAgcGFzc3dvcmQgPSBTeXMuZ2V0ZW52KCJwYXNzd29yZCIpDQopDQpgYGANCg0K</div>
 
 
 

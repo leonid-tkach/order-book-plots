@@ -11,11 +11,11 @@ library(RPostgres)
 ```{r}
 con <- DBI::dbConnect(
   RPostgres::Postgres(),
-  dbname = "dbobp",
-  host = "ls-27d029825698cf13d3ab49ee92428a74a412cad4.cs6qemxizget.us-east-1.rds.amazonaws.com",
-  port = 5432,
-  user = "dbweaver",
-  password = rstudioapi::askForPassword("Database password")
+  dbname = Sys.getenv("dbname"),
+  host = Sys.getenv("host"),
+  port = Sys.getenv("port"),
+  user = Sys.getenv("user"),
+  password = Sys.getenv("password")
 )
 ```
 
