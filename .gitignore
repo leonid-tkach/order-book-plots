@@ -1,4 +1,6 @@
-#*.csv
+
+
+*.csv
 *.gif
 
 # History files
