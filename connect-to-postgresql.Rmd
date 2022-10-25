@@ -21,11 +21,11 @@ con <- DBI::dbConnect(
 ```
 
 ```{r}
-dbDisconnect(con)
+# dbDisconnect(con)
 ```
 
 
 ```{r}
-# tbl(con, "obp_cum_atts")
+tbl(con, "obp_cum_atts")
 ```
 
