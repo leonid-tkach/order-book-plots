@@ -1,4 +1,6 @@
-#*.csv
+.Renviron
+
+*.csv
 *.gif
 
 # History files

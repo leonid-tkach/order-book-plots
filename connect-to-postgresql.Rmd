@@ -1,0 +1,31 @@
+---
+title: "connect-to-postgresql"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(DBI)
+library(RPostgres)
+```
+
+```{r}
+con <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  dbname = Sys.getenv("dbname"),
+  host = Sys.getenv("host"),
+  port = Sys.getenv("port"),
+  user = Sys.getenv("user"),
+  password = Sys.getenv("password")
+)
+```
+
+```{r}
+dbDisconnect(con)
+```
+
+
+```{r}
+# tbl(con, "obp_cum_atts")
+```
+

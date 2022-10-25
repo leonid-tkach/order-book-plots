@@ -294,15 +294,6 @@ static_plot
 ```
 
 ```{r}
-dens_plot <- ggplot(td_first_30minute_df, aes(x = NO, y = PRICE)) +
-  stat_density2d(aes(fill = ..level..), alpha = .5,
-                 geom = "polygon", data = td_first_30minute_df) + 
-  scale_fill_viridis_c() + 
-  theme(legend.position = 'none')
-dens_plot
-```
-
-```{r}
 
 ```
 
