@@ -5,6 +5,7 @@ output: html_notebook
 
 ```{r}
 library(tidyverse)
+library(DBI)
 library(RPostgres)
 ```
 
@@ -17,5 +18,14 @@ con <- DBI::dbConnect(
   user = Sys.getenv("user"),
   password = Sys.getenv("password")
 )
+```
+
+```{r}
+dbDisconnect(con)
+```
+
+
+```{r}
+# tbl(con, "obp_cum_atts")
 ```
 
