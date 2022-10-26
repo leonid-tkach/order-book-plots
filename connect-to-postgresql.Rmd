@@ -21,7 +21,12 @@ con <- DBI::dbConnect(
 ```
 
 ```{r}
-# dbDisconnect(con)
+
+```
+
+
+```{r}
+dbDisconnect(con)
 ```
 
 
