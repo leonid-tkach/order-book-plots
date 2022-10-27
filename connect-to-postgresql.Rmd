@@ -109,9 +109,9 @@ dt_cp_sb <- plot_df %>% filter(obplotno == curplotno & att != "BTVOL" & att != "
 dt_cp_t <- plot_df %>% filter(obplotno == curplotno & (att == "BTVOL" | att == "STVOL"))
 
 ggplot(bind_rows(tibble(dt_s, gr = "s"), tibble(dt_b, gr = "b")), aes(x = nno, y = price)) +
-  stat_density2d(geom = "density2d", aes(color = gr)) + 
+  stat_density2d(geom = "density2d", aes(color = gr, alpha = log(..level..))) + 
   scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
-  geom_point(data = dt_t, mapping = aes(x = nno, y = price), 
+  geom_point(data = dt_t, mapping = aes(x = nno, y = price),# alpha = val), 
              color = dt_t$pcolor, shape = dt_t$pshape, size = dt_t$psize) +
   geom_point(data = dt_cp_sb, mapping = aes(x = nno, y = price), 
              color = dt_cp_sb$pcolor, shape = dt_cp_sb$pshape, size = dt_cp_sb$psize) +
