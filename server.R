@@ -4,6 +4,7 @@ curplotno = 1869
 
 function(input, output, session) {
   # browser()
+  dbname <- reactive(Sys.getenv("dbname"))
   plot_df <- reactive({
     con <- DBI::dbConnect(
       RPostgres::Postgres(),
@@ -89,6 +90,8 @@ function(input, output, session) {
     })
   
   # browser()
+  
+  output$dbname <- renderText({dbname()})
   
   output$obp_plot <- renderPlot({
     ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
