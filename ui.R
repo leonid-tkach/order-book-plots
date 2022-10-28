@@ -1,8 +1,7 @@
 library(shiny)
-# library(tidyverse)
-library(plotly)
+library(tidyverse)
 
 fluidPage(
   "order-book-plots",
-  plotlyOutput("obp_plot")
+  plotOutput("obp_plot")
 )
