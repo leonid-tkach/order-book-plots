@@ -132,10 +132,9 @@ xx_gg <- ggplot(bind_rows(tibble(dt_s, gr = "s"), tibble(dt_b, gr = "b")), aes(x
              color = dt_cp_t$pcolor, shape = dt_cp_t$pshape, size = dt_cp_t$psize) +
   theme_bw()
 
-saveRDS(xx_gg, file = "xx_gg.rds")
 ```
 
 ```{r}
-readRDS("xx_gg.rds")
+
 ```
 
