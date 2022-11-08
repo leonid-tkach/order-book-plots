@@ -33,7 +33,7 @@ order_atts_cumsums_enhanced_pg
 ```
 
 ```{r}
-gg_slow <- function() {
+a_gg_slow <- function() {
  # curplotno = 302
   curplotno = 1869
   # curplotno = 52
@@ -92,9 +92,9 @@ gg_slow <- function() {
     mutate(pcolor = map2(att, obplotno, ~pcolor(.x, .y)) %>% unlist(),
            pshape = map2(att, obplotno, ~pshape(.x, .y)) %>% unlist(),
            psize = map2(att, obplotno, ~psize(.x, .y)) %>% unlist())
-  plot_df %>% 
-    filter(obplotno == curplotno) %>% 
-    arrange(ddate, nno)
+  # plot_df %>% 
+  #   filter(obplotno == curplotno) %>% 
+  #   arrange(ddate, nno)
   
   dt_s <- plot_df %>% filter(obplotno != curplotno & att == "SOVOL")
   dt_b <- plot_df %>% filter(obplotno != curplotno & att == "BOVOL")
@@ -121,7 +121,7 @@ obp_cum_atts_enh_pg
 ```
 
 ```{r}
-gg_pre_sql <- function() {
+b_gg_pre_sql <- function() {
  # curplotno = 302
   curplotno = 1869
   # curplotno = 52
@@ -188,8 +188,13 @@ ggplot_timer <- function(n,
 }
 
 ggplot_timer(n = 10,
-             plot_fun = gg_pre_sql,#gg_slow, 
+             plot_fun = a_gg_slow, 
              ind = 0)
+
+ggplot_timer(n = 10,
+             plot_fun = b_gg_pre_sql,
+             ind = 0)
+
 ```
 
 ```{r}
