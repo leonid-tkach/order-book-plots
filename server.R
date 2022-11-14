@@ -3,106 +3,111 @@ curplotno = 1869
 # curplotno = 52
 
 function(input, output, session) {
-  # browser()
-  dbname <- reactive(Sys.getenv("dbname"))
-  plot_df <- reactive({
-    con <- DBI::dbConnect(
-      RPostgres::Postgres(),
-      dbname = Sys.getenv("dbname"),
-      host = Sys.getenv("host"),
-      port = Sys.getenv("port"),
-      user = Sys.getenv("user"),
-      password = Sys.getenv("password")
-    )
-    order_atts_cumsums_enhanced_pg <- tbl(con, "order_atts_cumsums_enhanced")
-
-    pbegin_pend <- order_atts_cumsums_enhanced_pg %>%
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>%
-      pull(datetimemlls) %>% 
-      (function(dates) c(min(dates), max(dates)))()
-    
-    pbegin <- pbegin_pend[1]
-    pend <- pbegin_pend[2]
-    
-    pcolor <- function(att, plotno) {
-      color = ""
-      if (plotno == curplotno) {
-        if (att == 'BOVOL') color = "green"
-        else if (att == 'SOVOL') color = "red"
-        else if (att == 'BTVOL' | att == 'STVOL') color = "#8031A7" #"blue"
-        else color = "white"
-      } else {
-        if (att == 'BOVOL') color = "aquamarine"
-        else if (att == 'SOVOL') color = "coral"
-        else if (att == 'BTVOL' | att == 'STVOL') color = "#004481" #"cadetblue1"
-        else color = "white"
-      }
-      # print(paste(att, plotno, color))
-      return(color)
-    }
-    
-    pshape <- function(att, plotno) {
-      color = ""
-      if (plotno == curplotno) {
-        shape = 16
-      } else {
-        shape = 4
-      }
-      # print(paste(att, plotno, color))
-      return(shape)
-    }
-    
-    psize <- function(att, plotno) {
-      color = ""
-      if (plotno == curplotno) {
-        size = 1.0
-      } else {
-        size = 0.5
-      }
-      # print(paste(att, plotno, color))
-      return(size)
-    }
-    
-    to_plot_df <- order_atts_cumsums_enhanced_pg %>% 
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
-      as_tibble()
-      
-    to_plot_df %>% 
-      mutate(pcolor = map2(att, obplotno, ~pcolor(.x, .y)) %>% unlist(),
-             pshape = map2(att, obplotno, ~pshape(.x, .y)) %>% unlist(),
-             psize = map2(att, obplotno, ~psize(.x, .y)) %>% unlist())
-  })
-  
-  dt_s <- reactive({
-    plot_df() %>% filter(obplotno != curplotno & att == "SOVOL")
-    })
-  dt_b <- reactive({
-    plot_df() %>% filter(obplotno != curplotno & att == "BOVOL")
-    })
-  dt_t <- reactive({
-    plot_df() %>% filter(obplotno != curplotno & (att == "BTVOL" | att == "STVOL"))
-    })
-  dt_cp_sb <- reactive({
-    plot_df() %>% filter(obplotno == curplotno & att != "BTVOL" & att != "STVOL")
-    })
-  dt_cp_t <- reactive({
-    plot_df() %>% filter(obplotno == curplotno & (att == "BTVOL" | att == "STVOL"))
-    })
-  
-  # browser()
-  
-  output$dbname <- renderText({dbname()})
-  
   output$obp_plot <- renderPlot({
-    ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
-      stat_density2d(geom = "density2d", aes(color = gr, alpha = ..level..)) + 
-      scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
-      geom_point(data = dt_t(), mapping = aes(x = nno, y = price),# alpha = val), 
-                 color = dt_t()$pcolor, shape = dt_t()$pshape, size = dt_t()$psize) +
-      geom_point(data = dt_cp_sb(), mapping = aes(x = nno, y = price), 
-                 color = dt_cp_sb()$pcolor, shape = dt_cp_sb()$pshape, size = dt_cp_sb()$psize) +
-      geom_point(data = dt_cp_t(), mapping = aes(x = nno, y = price), 
-                 color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
-      theme_bw()
+    ggplot(data = mpg) + 
+      geom_point(mapping = aes(x = displ, y = hwy, color = class))
   })
+
+  # # browser()
+  # dbname <- reactive(Sys.getenv("dbname"))
+  # plot_df <- reactive({
+  #   con <- DBI::dbConnect(
+  #     RPostgres::Postgres(),
+  #     dbname = Sys.getenv("dbname"),
+  #     host = Sys.getenv("host"),
+  #     port = Sys.getenv("port"),
+  #     user = Sys.getenv("user"),
+  #     password = Sys.getenv("password")
+  #   )
+  #   order_atts_cumsums_enhanced_pg <- tbl(con, "order_atts_cumsums_enhanced")
+  # 
+  #   pbegin_pend <- order_atts_cumsums_enhanced_pg %>%
+  #     filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>%
+  #     pull(datetimemlls) %>% 
+  #     (function(dates) c(min(dates), max(dates)))()
+  #   
+  #   pbegin <- pbegin_pend[1]
+  #   pend <- pbegin_pend[2]
+  #   
+  #   pcolor <- function(att, plotno) {
+  #     color = ""
+  #     if (plotno == curplotno) {
+  #       if (att == 'BOVOL') color = "green"
+  #       else if (att == 'SOVOL') color = "red"
+  #       else if (att == 'BTVOL' | att == 'STVOL') color = "#8031A7" #"blue"
+  #       else color = "white"
+  #     } else {
+  #       if (att == 'BOVOL') color = "aquamarine"
+  #       else if (att == 'SOVOL') color = "coral"
+  #       else if (att == 'BTVOL' | att == 'STVOL') color = "#004481" #"cadetblue1"
+  #       else color = "white"
+  #     }
+  #     # print(paste(att, plotno, color))
+  #     return(color)
+  #   }
+  #   
+  #   pshape <- function(att, plotno) {
+  #     color = ""
+  #     if (plotno == curplotno) {
+  #       shape = 16
+  #     } else {
+  #       shape = 4
+  #     }
+  #     # print(paste(att, plotno, color))
+  #     return(shape)
+  #   }
+  #   
+  #   psize <- function(att, plotno) {
+  #     color = ""
+  #     if (plotno == curplotno) {
+  #       size = 1.0
+  #     } else {
+  #       size = 0.5
+  #     }
+  #     # print(paste(att, plotno, color))
+  #     return(size)
+  #   }
+  #   
+  #   to_plot_df <- order_atts_cumsums_enhanced_pg %>% 
+  #     filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
+  #     as_tibble()
+  #     
+  #   to_plot_df %>% 
+  #     mutate(pcolor = map2(att, obplotno, ~pcolor(.x, .y)) %>% unlist(),
+  #            pshape = map2(att, obplotno, ~pshape(.x, .y)) %>% unlist(),
+  #            psize = map2(att, obplotno, ~psize(.x, .y)) %>% unlist())
+  # })
+  # 
+  # dt_s <- reactive({
+  #   plot_df() %>% filter(obplotno != curplotno & att == "SOVOL")
+  #   })
+  # dt_b <- reactive({
+  #   plot_df() %>% filter(obplotno != curplotno & att == "BOVOL")
+  #   })
+  # dt_t <- reactive({
+  #   plot_df() %>% filter(obplotno != curplotno & (att == "BTVOL" | att == "STVOL"))
+  #   })
+  # dt_cp_sb <- reactive({
+  #   plot_df() %>% filter(obplotno == curplotno & att != "BTVOL" & att != "STVOL")
+  #   })
+  # dt_cp_t <- reactive({
+  #   plot_df() %>% filter(obplotno == curplotno & (att == "BTVOL" | att == "STVOL"))
+  #   })
+  # 
+  # # browser()
+  # 
+  # output$dbname <- renderText({dbname()})
+  # 
+  # output$obp_plot <- renderPlot({
+  #   ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
+  #     stat_density2d(geom = "density2d", aes(color = gr, alpha = ..level..)) + 
+  #     scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
+  #     geom_point(data = dt_t(), mapping = aes(x = nno, y = price),# alpha = val), 
+  #                color = dt_t()$pcolor, shape = dt_t()$pshape, size = dt_t()$psize) +
+  #     geom_point(data = dt_cp_sb(), mapping = aes(x = nno, y = price), 
+  #                color = dt_cp_sb()$pcolor, shape = dt_cp_sb()$pshape, size = dt_cp_sb()$psize) +
+  #     geom_point(data = dt_cp_t(), mapping = aes(x = nno, y = price), 
+  #                color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
+  #     theme_bw()
+  # })
 }
