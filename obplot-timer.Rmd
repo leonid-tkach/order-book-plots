@@ -29,10 +29,16 @@ con <- DBI::dbConnect(
 
 ```{r}
 # order_atts_cumsums_enhanced_pg <- tbl(con, "order_atts_cumsums_enh2")
-order_atts_cumsums_enhanced_pg <- tbl(con, "order_atts_cumsums_enh3")
+# order_atts_cumsums_enhanced_pg <- tbl(con, "order_atts_cumsums_enh3")
 order_atts_cumsums_enhanced_pg <- tbl(con, "order_atts_cumsums_enh4")
 order_atts_cumsums_enhanced_pg
 ```
+
+```{r}
+obp_cum_atts_enh_pg <- tbl(con, "obp_cum_atts_enh")
+obp_cum_atts_enh_pg
+```
+
 
 ```{r}
 # a_gg_slow <- function() {
@@ -117,10 +123,6 @@ order_atts_cumsums_enhanced_pg
 # }
 ```
 
-```{r}
-obp_cum_atts_enh_pg <- tbl(con, "obp_cum_atts_enh")
-obp_cum_atts_enh_pg
-```
 
 ```{r}
 # b_gg_pre_sql <- function() {
