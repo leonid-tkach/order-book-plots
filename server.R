@@ -2,24 +2,25 @@
 curplotno = 1869
 # curplotno = 52
 
-function(input, output, session) {
-  # output$obp_plot <- renderPlot({
-  #   ggplot(data = mpg) + 
-  #     geom_point(mapping = aes(x = displ, y = hwy, color = class))
-  # })
+pool  <- dbPool(
+  drv = RPostgres::Postgres(),
+  dbname = Sys.getenv("dbname"),
+  host = Sys.getenv("host"),
+  # port = Sys.getenv("port"),
+  user = Sys.getenv("user"),
+  password = Sys.getenv("password")
+)
 
-  # browser()
+onStop(function() {
+  # message("before close - is valid? ", DBI::dbIsValid(pool))
+  poolClose(pool)
+  # message("after close - is valid? ", DBI::dbIsValid(pool))
+})
+
+function(input, output, session) {
   plot_df <- reactive({
-    con <- DBI::dbConnect(
-      RPostgres::Postgres(),
-      dbname = Sys.getenv("dbname"),
-      host = Sys.getenv("host"),
-      port = Sys.getenv("port"),
-      user = Sys.getenv("user"),
-      password = Sys.getenv("password")
-    )
-    order_atts_cumsums_enh_pg <- tbl(con, "order_atts_cumsums_enh4")
-    obp_cum_atts_enh_pg <- tbl(con, "obp_cum_atts_enh")
+    order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
+    obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
 
     pbegin <- obp_cum_atts_enh_pg %>%
       filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 

@@ -2,6 +2,7 @@ library(shiny)
 library(tidyverse)
 library(DBI)
 library(RPostgres)
+library(pool)
 
 fluidPage(
   "order-book-plots",
