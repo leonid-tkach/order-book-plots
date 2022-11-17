@@ -5,6 +5,5 @@ library(RPostgres)
 
 fluidPage(
   "order-book-plots",
-  textOutput("dbname"),
   plotOutput("obp_plot")
 )
