@@ -1,0 +1,45 @@
+---
+title: "prepare_bal_testing_dfs"
+output: html_notebook
+---
+
+
+```{r}
+library(shiny)
+library(tidyverse)
+```
+```{r}
+obps_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obps.csv")
+obps_df <- obps_df %>% 
+  mutate(TIME_S = TIME/1000)
+obps_df
+```
+
+
+```{r}
+order_atts_cumsums_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_order_atts_cumsums.csv")
+order_atts_cumsums_df
+```
+
+```{r}
+obp_cum_atts_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obp_cum_atts.csv")
+obp_cum_atts_df
+```
+
+```{r}
+order_atts_cumsums_enhanced_df <- left_join(order_atts_cumsums_df, 
+                                         obps_df %>% select(-OBPLOTNO, -SECCODE), 
+                                         by = c("NO", "DATE")) %>% 
+  select(NO, SECCODE, DATETIMEMLLS, PRICE, TRADEPRICE, VOLUME, 
+         DATE, TIME_S, OBPLOTNO, ATT, VAL, 
+         SHAREBAL, BPROFIT, SPROFIT, OBPMINTPRICE, OBPMAXTPRICE, 
+         CBOVOLtdcs, CSOVOLtdcs, BOVOLtdcs, SOVOLtdcs, BTVOLtdcs, STVOLtdcs, 
+         CBOVOLobpcs, CSOVOLobpcs, BOVOLobpcs, SOVOLobpcs, BTVOLobpcs, STVOLobpcs)
+order_atts_cumsums_enhanced_df
+```
+
+```{r}
+# obp_minmax_atts_df <- inner_join(obp_cum_atts %>% select(SECCODE, DATE, OBPLOTNO,
+#                                                          DATETIMEMLLS))
+```
+

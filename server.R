@@ -2,10 +2,6 @@
 # curplotno = 1869
 curplotno = 52
 
-prepare_obp_dfs <- function() {
-  
-}
-
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
   dbname = Sys.getenv("dbname"),
