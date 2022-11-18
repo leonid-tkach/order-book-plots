@@ -1,6 +1,10 @@
 # curplotno = 302
-curplotno = 1869
-# curplotno = 52
+# curplotno = 1869
+curplotno = 52
+
+prepare_obp_dfs <- function() {
+  
+}
 
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -43,19 +47,23 @@ function(input, output, session) {
 
   dt_s <- reactive({
     plot_df() %>% filter(obplotno != curplotno & att == "SOVOL")
-    })
+  })
+  
   dt_b <- reactive({
     plot_df() %>% filter(obplotno != curplotno & att == "BOVOL")
-    })
+  })
+
   dt_t <- reactive({
     plot_df() %>% filter(obplotno != curplotno & (att == "BTVOL" | att == "STVOL"))
-    })
+  })
+  
   dt_cp_sb <- reactive({
     plot_df() %>% filter(obplotno == curplotno & att != "BTVOL" & att != "STVOL")
-    })
+  })
+  
   dt_cp_t <- reactive({
     plot_df() %>% filter(obplotno == curplotno & (att == "BTVOL" | att == "STVOL"))
-    })
+  })
 
   output$obp_plot <- renderPlot({
     ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
@@ -69,4 +77,19 @@ function(input, output, session) {
                  color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
       theme_bw()
   })
+
+  output$balance_plot <- renderPlot({
+    ggplot(plot_df()) +
+      geom_line(aes(x=nno, y=bovoltdcs)) +
+      geom_line(aes(x=nno, y=bovolobpcs)) +
+      geom_line(aes(x=nno, y=-sovolobpcs)) +
+      geom_line(aes(x=nno, y=-sovoltdcs)) +
+      geom_line(aes(x=nno, y=btvoltdcs)) +
+      geom_line(aes(x=nno, y=btvolobpcs)) +
+      geom_line(aes(x=nno, y=-stvolobpcs)) +
+      geom_line(aes(x=nno, y=-stvoltdcs)) +
+      # scale_y_log10() +
+      theme_bw()
+  })
+    
 }

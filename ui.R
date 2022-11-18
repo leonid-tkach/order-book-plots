@@ -6,5 +6,6 @@ library(pool)
 
 fluidPage(
   "order-book-plots",
-  plotOutput("obp_plot")
+  plotOutput("obp_plot"),
+  plotOutput("balance_plot")
 )
