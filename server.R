@@ -1,6 +1,8 @@
 # curplotno = 302
 # curplotno = 1869
-curplotno = 52
+# curplotno = 52
+curplotno = 0
+# curplotno = 3
 
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -19,19 +21,27 @@ onStop(function() {
 
 function(input, output, session) {
   plot_df <- reactive({
-    order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
-    obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
-
+    
+    # order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
+    # obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
+    
+    order_atts_cumsums_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+    obp_cum_atts_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+    # browser()
+    
     pbegin <- obp_cum_atts_enh_pg %>%
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      # filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      filter(seccode == "sec1" & ddate == "2007-10-01" & obplotno == curplotno) %>% 
       pull(obpbegin)
     
     pend <- obp_cum_atts_enh_pg %>%
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      # filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      filter(seccode == "sec1" & ddate == "2007-10-01" & obplotno == curplotno) %>% 
       pull(obpend)
     
     plot_df <- order_atts_cumsums_enh_pg %>% 
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
+      # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
+      filter(seccode == "sec1" & ddate == "2007-10-01" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>% 
       as_tibble()
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "green"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"

@@ -75,7 +75,24 @@ obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
   select(SECCODE, DATE, OBPLOTNO, TRADEVOL, BUYSELLOBP,
          BPROFIT, SPROFIT,
          OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE,
-         TRADESNOTRADES, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO)
+         TRADESNOTRADES, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO) %>% 
+  rename("seccode" = "SECCODE",
+         "ddate" = "DATE",
+         "obplotno" = "OBPLOTNO",
+         "tradevol" = "TRADEVOL",
+         "buysellobp" = "BUYSELLOBP",
+         "bprofit" = "BPROFIT",
+         "sprofit" = "SPROFIT",
+         "obpbegin" = "OBPBEGIN",
+         "obpend" = "OBPEND",
+         "obpminprice" = "OBPMINPRICE",
+         "obpmaxprice" = "OBPMAXPRICE",
+         "tradesnotrades" = "TRADESNOTRADES",
+         "buysellyield" = "BUYSELLYIELD",
+         "obptdvolratio" = "OBPTDVOLRATIO",
+         "minmaxratio" = "MINMAXRATIO")
+obp_cum_atts_enh_df %>% 
+  write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
 obp_cum_atts_enh_df
 ```
 
@@ -93,7 +110,21 @@ order_atts_cumsums_enh2_df
 
 ```{r}
 order_atts_cumsums_enh4_df <- order_atts_cumsums_enh2_df %>% 
-  arrange(SECCODE, DATE, NO)
+  arrange(SECCODE, DATE, NO) %>% 
+  rename("nno" = "NO",
+         "seccode" = "SECCODE",
+         "datetimemlls" = "DATETIMEMLLS",
+         "price" = "PRICE",
+         "tradeprice" = "TRADEPRICE",
+         "volume" = "VOLUME",
+         "ddate" = "DATE",
+         "ttime_s" = "TIME_S",
+         "obplotno" = "OBPLOTNO",
+         "att" = "ATT",
+         "val" = "VAL",
+         "sharebal" = "SHAREBAL")
+order_atts_cumsums_enh4_df %>%
+  write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
 order_atts_cumsums_enh4_df
 ```
 
