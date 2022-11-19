@@ -72,9 +72,10 @@ function(input, output, session) {
   })
 
   output$obp_plot <- renderPlot({
-    ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
-      stat_density2d(geom = "density2d", aes(color = gr, alpha = ..level..)) +
-      scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
+    ggplot() +
+    # ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
+    #   stat_density2d(geom = "density2d", aes(color = gr, alpha = ..level..)) +
+    #   scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
       geom_point(data = dt_t(), mapping = aes(x = nno, y = price),# alpha = val),
                  color = dt_t()$pcolor, shape = dt_t()$pshape, size = dt_t()$psize) +
       geom_point(data = dt_cp_sb(), mapping = aes(x = nno, y = price),
@@ -86,14 +87,14 @@ function(input, output, session) {
 
   output$balance_plot <- renderPlot({
     ggplot(plot_df()) +
-      geom_line(aes(x=nno, y=bovoltdcs)) +
-      geom_line(aes(x=nno, y=bovolobpcs)) +
-      geom_line(aes(x=nno, y=-sovolobpcs)) +
-      geom_line(aes(x=nno, y=-sovoltdcs)) +
-      geom_line(aes(x=nno, y=btvoltdcs)) +
-      geom_line(aes(x=nno, y=btvolobpcs)) +
-      geom_line(aes(x=nno, y=-stvolobpcs)) +
-      geom_line(aes(x=nno, y=-stvoltdcs)) +
+      geom_line(aes(x=nno, y=BOVOLtdcs)) +
+      geom_line(aes(x=nno, y=BOVOLobpcs)) +
+      geom_line(aes(x=nno, y=-SOVOLobpcs)) +
+      geom_line(aes(x=nno, y=-SOVOLtdcs)) +
+      geom_line(aes(x=nno, y=BTVOLtdcs)) +
+      geom_line(aes(x=nno, y=BTVOLobpcs)) +
+      geom_line(aes(x=nno, y=-STVOLobpcs)) +
+      geom_line(aes(x=nno, y=-STVOLtdcs)) +
       # scale_y_log10() +
       theme_bw()
   })
