@@ -1926,25 +1926,28 @@ order_atts_cumsums_enhanced_df</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub2JwX2N1bV9taW5tYXhfYXR0c19kZiA8LSBsZWZ0X2pvaW4ob2JwX2N1bV9hdHRzX2RmLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9icF9taW5tYXhfYXR0c19kZiAlPiUgc2VsZWN0KE9CUEJFR0lOLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgT0JQRU5ELFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgT0JQTUlOUFJJQ0UsXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBPQlBNQVhQUklDRSksXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBieSA9IGMoXCJTRUNDT0RFXCIsIFwiREFURVwiLCBcIk9CUExPVE5PXCIpKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub2JwX2N1bV9taW5tYXhfYXR0c19kZiA8LSBsZWZ0X2pvaW4ob2JwX2N1bV9hdHRzX2RmLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9icF9taW5tYXhfYXR0c19kZiAlPiUgc2VsZWN0KFNFQ0NPREUsXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBEQVRFLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgT0JQTE9UTk8sXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBPQlBCRUdJTixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE9CUEVORCxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE9CUE1JTlBSSUNFLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgT0JQTUFYUFJJQ0UpLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgYnkgPSBjKFwiU0VDQ09ERVwiLCBcIkRBVEVcIiwgXCJPQlBMT1ROT1wiKSkgJT4lIFxuICBzZWxlY3QoU0VDQ09ERSwgREFURSwgT0JQTE9UTk8sIFRSQURFVk9MLCBCVVlTRUxMT0JQLFxuICAgICAgICAgT0JQQkVHSU4sIE9CUEVORCwgT0JQTUlOUFJJQ0UsIE9CUE1BWFBSSUNFLFxuICAgICAgICAgVFJBREVTTk9UUkFERVMsIEJVWVNFTExZSUVMRCwgT0JQVERWT0xSQVRJTywgTUlOTUFYUkFUSU8pXG5vYnBfY3VtX21pbm1heF9hdHRzX2RmXG5gYGAifQ== -->
 <pre class="r"><code>obp_cum_minmax_atts_df &lt;- left_join(obp_cum_atts_df, 
-                                    obp_minmax_atts_df %&gt;% select(OBPBEGIN,
+                                    obp_minmax_atts_df %&gt;% select(SECCODE,
+                                                                  DATE,
+                                                                  OBPLOTNO,
+                                                                  OBPBEGIN,
                                                                   OBPEND,
                                                                   OBPMINPRICE,
                                                                   OBPMAXPRICE),
-                                    by = c(&quot;SECCODE&quot;, &quot;DATE&quot;, &quot;OBPLOTNO&quot;))</code></pre>
+                                    by = c(&quot;SECCODE&quot;, &quot;DATE&quot;, &quot;OBPLOTNO&quot;)) %&gt;% 
+  select(SECCODE, DATE, OBPLOTNO, TRADEVOL, BUYSELLOBP,
+         OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE,
+         TRADESNOTRADES, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO)
+obp_cum_minmax_atts_df</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiQWRkaW5nIG1pc3NpbmcgZ3JvdXBpbmcgdmFyaWFibGVzOiBgU0VDQ09ERWAsIGBEQVRFYFxuIn0= -->
-<pre><code>Adding missing grouping variables: `SECCODE`, `DATE`</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYGxlZnRfam9pbigpYDpcbiEgSm9pbiBjb2x1bW5zIG11c3QgYmUgcHJlc2VudCBpbiBkYXRhLlxu4pyWIFByb2JsZW0gd2l0aCBgT0JQTE9UTk9gLlxuQmFja3RyYWNlOlxuIDEuIGRwbHlyOjpsZWZ0X2pvaW4oLi4uKVxuIDIuIGRwbHlyOjo6bGVmdF9qb2luLmRhdGEuZnJhbWUoLi4uKVxuIn0= -->
-<pre><code>Error in `left_join()`:
-! Join columns must be present in data.
-✖ Problem with `OBPLOTNO`.
-Backtrace:
- 1. dplyr::left_join(...)
- 2. dplyr:::left_join.data.frame(...)</code></pre>
-<!-- rnb-output-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6OCwibmNvbCI6MTMsInN1bW1hcnkiOnsiQSB0aWJibGUiOlsiOCDDlyAxMyJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJxMVV6VzdUUUJCZXh6Wk5YWndnNVFWNGdSaTF1Y0NGL05sVUxpR09FZ2VsNG1SY0E2SEJybXhYUkQzbGxuTTVjS1VTTDhBVG9Kd1JITGh3NFZKRUpVNGdqcHhxeHQ3Wk5IWVJFTFdXMWpQZk43czdzek96MjFVSEZXa2dFVUo0SXVRNHdvdWdFckZ2M2luZkpNQUE0SWhBVm1NNWhra2xVR1FZMTJEazBTQUVqcjIrcEw3eFh6cmhDN0dmMnJ2dmt6aXNNL21EcE9YZjdabURpUGJJQ2dJOEJDTUYxUW9ka0tjd0VxZTRrdFRtMnRLWUJ2OWlSdmxYTlNxWHhDU2RiSzV4VVFXVFd2ODRxOFIxVCtRa2tkT24xMUVlVWI2STlpTEZVdy90M3VSOFVzTUR6M1V5U2VYN1pwUE95MFZveXFGcHBXUDA5SUVkSXJ5U3dKQVc0Q3pBQWcyc1VqaW1qbDBNeEoxUnZvU0JsaWllQm5pUTRKZ0Z5RWVYRXhNVzh6WVdXVWU1Sko3dlUwVitDMlVXMXlaVTN2MHpoazhpdEVtNWY0eFVNMS9nUy9hcGZ2MTA2OUQvOHFaNnN2WDZ3OUZMNFR4K3I0eHZqSDlXVHpZK0gzeDcreUNMeWFYbE1kMThydlhNWVRkYVp0WHNhYzJtb1dyekMxNDNtWjQzR3AyV1liWU5oczF1WGRYdUd5M0VVcU8vM2ROYUxaaTJzS0toYmVwdDFodUF0YmFLYUEzUVBiM2Q2ZXBOYlpHcUR4YXBRdUtsMXphb1JQWXErdHJXdFJiYlQ0YkZwZ3J4ZE91bXpvSmNBdyt3STZYUzUxLzF2ZWNLeTBIOFBPY204SXVpNkZlbTA5a0NhY2NLTGVXUkQwdEkwdDZwN1ZhOHZYRG91YkJaTG43dnhjeGl6czhReFgwM2RyNVR0cC9zdTd2bGRVSzdrOE5TeWFqbkYzU1p1aFJZWUNMTHErTStIc0k3Z25VZFdRK2RFVXNmSERJNW83TG5EMTEyU1NWZ0F5WDBRb3ZOazJ4dnhCaDZkVTkvQXdHTUxNN21CZ0FBIn0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["SECCODE"],"name":[1],"type":["chr"],"align":["left"]},{"label":["DATE"],"name":[2],"type":["date"],"align":["right"]},{"label":["OBPLOTNO"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["TRADEVOL"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["BUYSELLOBP"],"name":[5],"type":["chr"],"align":["left"]},{"label":["OBPBEGIN"],"name":[6],"type":["S3: POSIXct"],"align":["right"]},{"label":["OBPEND"],"name":[7],"type":["S3: POSIXct"],"align":["right"]},{"label":["OBPMINPRICE"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["OBPMAXPRICE"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["TRADESNOTRADES"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["BUYSELLYIELD"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["OBPTDVOLRATIO"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["MINMAXRATIO"],"name":[13],"type":["dbl"],"align":["right"]}],"data":[{"1":"sec1","2":"2007-10-01","3":"0","4":"1200","5":"B","6":"2007-10-01 10:30:00","7":"2007-10-01 10:30:18","8":"30","9":"31","10":"TRUE","11":"0","12":"0.6199005","13":"30"},{"1":"sec1","2":"2007-10-01","3":"3","4":"2000","5":"B","6":"2007-10-01 10:30:02","7":"2007-10-01 10:30:19","8":"50","9":"52","10":"TRUE","11":"0","12":"0.6341113","13":"50"},{"1":"sec1","2":"2007-10-02","3":"0","4":"1200","5":"B","6":"2007-10-02 10:30:00","7":"2007-10-02 10:30:18","8":"30","9":"31","10":"TRUE","11":"0","12":"0.6199005","13":"30"},{"1":"sec1","2":"2007-10-02","3":"3","4":"2000","5":"B","6":"2007-10-02 10:30:02","7":"2007-10-02 10:30:19","8":"50","9":"52","10":"TRUE","11":"0","12":"0.6341113","13":"50"},{"1":"sec2","2":"2007-10-01","3":"0","4":"1200","5":"B","6":"2007-10-01 10:30:20","7":"2007-10-01 10:30:38","8":"30","9":"33","10":"TRUE","11":"0","12":"0.6186745","13":"30"},{"1":"sec2","2":"2007-10-01","3":"3","4":"2000","5":"B","6":"2007-10-01 10:30:22","7":"2007-10-01 10:30:39","8":"50","9":"54","10":"TRUE","11":"0","12":"0.6312082","13":"50"},{"1":"sec2","2":"2007-10-02","3":"0","4":"1200","5":"B","6":"2007-10-02 10:30:20","7":"2007-10-02 10:30:38","8":"30","9":"33","10":"TRUE","11":"0","12":"0.6186745","13":"30"},{"1":"sec2","2":"2007-10-02","3":"3","4":"2000","5":"B","6":"2007-10-02 10:30:22","7":"2007-10-02 10:30:39","8":"50","9":"54","10":"TRUE","11":"0","12":"0.6312082","13":"50"}],"options":{"columns":{"min":{},"max":[10],"total":[13]},"rows":{"min":[10],"max":[10],"total":[8]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
