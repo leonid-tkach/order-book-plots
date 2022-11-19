@@ -39,8 +39,16 @@ order_atts_cumsums_enhanced_df
 ```
 
 ```{r}
-obp_minmax_atts_df <- inner_join(obp_cum_atts %>% select(SECCODE, DATE, OBPLOTNO,
-                                                         DATETIMEMLLS))
+obp_minmax_atts_df <- order_atts_cumsums_enhanced_df %>% 
+  select(SECCODE, DATE, OBPLOTNO,
+         DATETIMEMLLS, PRICE) %>% 
+  group_by(SECCODE, DATE, OBPLOTNO) %>% 
+  summarise(obpbegin = min(DATETIMEMLLS), obpend = max(DATETIMEMLLS), 
+            obpminprice = min(PRICE), obpmaxprice = max(PRICE))
+obp_minmax_atts_df
+```
+
+```{r}
 
 ```
 
