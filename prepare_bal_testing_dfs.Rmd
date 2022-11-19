@@ -39,7 +39,8 @@ order_atts_cumsums_enhanced_df
 ```
 
 ```{r}
-# obp_minmax_atts_df <- inner_join(obp_cum_atts %>% select(SECCODE, DATE, OBPLOTNO,
-#                                                          DATETIMEMLLS))
+obp_minmax_atts_df <- inner_join(obp_cum_atts %>% select(SECCODE, DATE, OBPLOTNO,
+                                                         DATETIMEMLLS))
+
 ```
 
