@@ -1,6 +1,9 @@
+cursec = "sec1"
+curdate = "2007-10-01"
 # curplotno = 302
-curplotno = 1869
+# curplotno = 1869
 # curplotno = 52
+curplotno = 0
 
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -19,19 +22,28 @@ onStop(function() {
 
 function(input, output, session) {
   plot_df <- reactive({
-    order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
-    obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
-
+    
+    # order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
+    # obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
+    
+    order_atts_cumsums_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+    obp_cum_atts_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+    # browser()
+    
     pbegin <- obp_cum_atts_enh_pg %>%
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      # filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
       pull(obpbegin)
+    # browser()
     
     pend <- obp_cum_atts_enh_pg %>%
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      # filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
+      filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
       pull(obpend)
     
     plot_df <- order_atts_cumsums_enh_pg %>% 
-      filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
+      # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
+      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>% 
       as_tibble()
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "green"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"
@@ -43,24 +55,29 @@ function(input, output, session) {
 
   dt_s <- reactive({
     plot_df() %>% filter(obplotno != curplotno & att == "SOVOL")
-    })
+  })
+  
   dt_b <- reactive({
     plot_df() %>% filter(obplotno != curplotno & att == "BOVOL")
-    })
+  })
+
   dt_t <- reactive({
     plot_df() %>% filter(obplotno != curplotno & (att == "BTVOL" | att == "STVOL"))
-    })
+  })
+  
   dt_cp_sb <- reactive({
     plot_df() %>% filter(obplotno == curplotno & att != "BTVOL" & att != "STVOL")
-    })
+  })
+  
   dt_cp_t <- reactive({
     plot_df() %>% filter(obplotno == curplotno & (att == "BTVOL" | att == "STVOL"))
-    })
+  })
 
   output$obp_plot <- renderPlot({
-    ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
-      stat_density2d(geom = "density2d", aes(color = gr, alpha = ..level..)) +
-      scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
+    ggplot() +
+    # ggplot(bind_rows(tibble(dt_s(), gr = "s"), tibble(dt_b(), gr = "b")), aes(x = nno, y = price)) +
+    #   stat_density2d(geom = "density2d", aes(color = gr, alpha = ..level..)) +
+    #   scale_color_manual(values=c("s"="#FF0000", "b"="#00FF00")) +
       geom_point(data = dt_t(), mapping = aes(x = nno, y = price),# alpha = val),
                  color = dt_t()$pcolor, shape = dt_t()$pshape, size = dt_t()$psize) +
       geom_point(data = dt_cp_sb(), mapping = aes(x = nno, y = price),
@@ -69,4 +86,19 @@ function(input, output, session) {
                  color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
       theme_bw()
   })
+
+  output$balance_plot <- renderPlot({
+    ggplot() +
+      geom_line(data = dt_b(), mapping = aes(x=nno, y=BOVOLobpcs)) +
+      geom_line(data = dt_s(), mapping = aes(x=nno, y=-SOVOLobpcs)) +
+      geom_line(data = plot_df(), mapping = aes(x=nno, y=BOVOLtdcs)) +
+      geom_line(data = plot_df(), mapping = aes(x=nno, y=-SOVOLtdcs)) +
+      # geom_line(aes(x=nno, y=BTVOLobpcs)) +
+      # geom_line(aes(x=nno, y=-STVOLobpcs)) +
+      # geom_line(aes(x=nno, y=BTVOLtdcs)) +
+      # geom_line(aes(x=nno, y=-STVOLtdcs)) +
+      # # scale_y_log10() +
+      theme_bw()
+  })
+    
 }

@@ -1,0 +1,130 @@
+---
+title: "prepare_bal_testing_dfs"
+output: html_notebook
+---
+
+
+```{r}
+library(shiny)
+library(tidyverse)
+```
+```{r}
+obps_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obps.csv")
+obps_df <- obps_df %>% 
+  mutate(TIME_S = TIME/1000)
+obps_df
+```
+
+
+```{r}
+order_atts_cumsums_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_order_atts_cumsums.csv")
+order_atts_cumsums_df
+```
+
+```{r}
+obp_cum_atts_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obp_cum_atts.csv")
+obp_cum_atts_df
+```
+
+```{r}
+order_atts_cumsums_enhanced_df <- left_join(order_atts_cumsums_df, 
+                                         obps_df %>% select(-OBPLOTNO, -SECCODE), 
+                                         by = c("NO", "DATE")) %>% 
+  select(NO, SECCODE, DATETIMEMLLS, PRICE, TRADEPRICE, VOLUME, 
+         DATE, TIME_S, OBPLOTNO, ATT, VAL, 
+         SHAREBAL, BPROFIT, SPROFIT, OBPMINTPRICE, OBPMAXTPRICE, 
+         CBOVOLtdcs, CSOVOLtdcs, BOVOLtdcs, SOVOLtdcs, BTVOLtdcs, STVOLtdcs, 
+         CBOVOLobpcs, CSOVOLobpcs, BOVOLobpcs, SOVOLobpcs, BTVOLobpcs, STVOLobpcs)
+order_atts_cumsums_enhanced_df
+```
+
+```{r}
+obp_minmax_atts_df <- order_atts_cumsums_enhanced_df %>% 
+  select(SECCODE, DATE, OBPLOTNO,
+         DATETIMEMLLS, PRICE) %>% 
+  group_by(SECCODE, DATE, OBPLOTNO) %>% 
+  summarise(OBPBEGIN = min(DATETIMEMLLS), OBPEND = max(DATETIMEMLLS), 
+            OBPMINPRICE = min(PRICE), OBPMAXPRICE = max(PRICE))
+obp_minmax_atts_df
+```
+
+```{r}
+obp_cum_minmax_atts_df <- left_join(obp_cum_atts_df, 
+                                    obp_minmax_atts_df %>% select(SECCODE,
+                                                                  DATE,
+                                                                  OBPLOTNO,
+                                                                  OBPBEGIN,
+                                                                  OBPEND,
+                                                                  OBPMINPRICE,
+                                                                  OBPMAXPRICE),
+                                    by = c("SECCODE", "DATE", "OBPLOTNO")) %>% 
+  select(SECCODE, DATE, OBPLOTNO, TRADEVOL, BUYSELLOBP,
+         OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE,
+         TRADESNOTRADES, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO)
+obp_cum_minmax_atts_df
+```
+
+```{r}
+obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
+                                  order_atts_cumsums_enhanced_df %>% select(SECCODE,
+                                                                            DATE,
+                                                                            OBPLOTNO,
+                                                                            BPROFIT,
+                                                                            SPROFIT),
+                                  by = c("SECCODE", "DATE", "OBPLOTNO")) %>% 
+  select(SECCODE, DATE, OBPLOTNO, TRADEVOL, BUYSELLOBP,
+         BPROFIT, SPROFIT,
+         OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE,
+         TRADESNOTRADES, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO) %>% 
+  rename("seccode" = "SECCODE",
+         "ddate" = "DATE",
+         "obplotno" = "OBPLOTNO",
+         "tradevol" = "TRADEVOL",
+         "buysellobp" = "BUYSELLOBP",
+         "bprofit" = "BPROFIT",
+         "sprofit" = "SPROFIT",
+         "obpbegin" = "OBPBEGIN",
+         "obpend" = "OBPEND",
+         "obpminprice" = "OBPMINPRICE",
+         "obpmaxprice" = "OBPMAXPRICE",
+         "tradesnotrades" = "TRADESNOTRADES",
+         "buysellyield" = "BUYSELLYIELD",
+         "obptdvolratio" = "OBPTDVOLRATIO",
+         "minmaxratio" = "MINMAXRATIO")
+obp_cum_atts_enh_df %>% 
+  write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+obp_cum_atts_enh_df
+```
+
+```{r}
+order_atts_cumsums_enh2_df <- order_atts_cumsums_enhanced_df %>% 
+  mutate(pcolor = if_else(ATT == "BOVOL", 
+                          "aquamarine", 
+                          if_else(ATT == "SOVOL",
+                                  "coral",
+                                  "#004481")),
+         pshape = 4L,
+         psize = 0.5)
+order_atts_cumsums_enh2_df
+```
+
+```{r}
+order_atts_cumsums_enh4_df <- order_atts_cumsums_enh2_df %>% 
+  arrange(SECCODE, DATE, NO) %>% 
+  rename("nno" = "NO",
+         "seccode" = "SECCODE",
+         "datetimemlls" = "DATETIMEMLLS",
+         "price" = "PRICE",
+         "tradeprice" = "TRADEPRICE",
+         "volume" = "VOLUME",
+         "ddate" = "DATE",
+         "ttime_s" = "TIME_S",
+         "obplotno" = "OBPLOTNO",
+         "att" = "ATT",
+         "val" = "VAL",
+         "sharebal" = "SHAREBAL")
+order_atts_cumsums_enh4_df %>%
+  write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+order_atts_cumsums_enh4_df
+```
+
