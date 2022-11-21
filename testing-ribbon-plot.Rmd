@@ -1,0 +1,45 @@
+---
+title: "testing-ribbon-plot"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(dygraphs)
+```
+
+```{r}
+test_ribbon_df <- tibble(no = c(1, 2, 3, 4, 5, 6, 7),
+                         max_std_btd = c(0, 3, 4, 4, 4, 3, 0),
+                         std = c(0, 3, 4, 4, 4, 3, 0),
+                         max_sobp_bobp = c(0, 0, 2, 3, 3, 0, 0),
+                         sobp = c(0, 0, 2, 3, 3, 0, 0),
+                         bobp = c(0, 0, -2, -3, -2, 0, 0),
+                         minus_max_sobp_bobp = c(0, 0, -2, -3, -3, 0, 0),
+                         btd = c(0, -3, -3, -4, -4, -3, 0),
+                         minus_max_std_btd = c(0, -3, -4, -4, -4, -3, 0))
+test_ribbon_df
+```
+
+```{r}
+
+```
+
+
+```{r}
+test_ribbon_long_df <- test_ribbon_df %>% 
+  pivot_longer(!no, names_to = "att", values_to = "val")
+test_ribbon_long_df
+```
+
+
+
+```{r}
+# ggplot(test_ribbon_long_df) +
+#   geom_area(aes(x = no, y = val, fill = att, ymin = 0))
+dygraph(test_ribbon_df) %>%
+  dyOptions(fillGraph=TRUE) %>% 
+  dyLegend(show = c("never"))
+```
+
