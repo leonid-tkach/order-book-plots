@@ -47,11 +47,14 @@ function(input, output, session) {
       # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
       filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
       as_tibble()
-    plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "green"
+    plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BTVOL", "pcolor"] <- "#8031A7"
-    plot_df[plot_df$obplotno == curplotno, "pshape"] <- 16
+    # plot_df[plot_df$obplotno == curplotno, "pshape"] <- 16
+    plot_df[, "pshape"] <- 16
+    plot_df[, "psize"] <- 1.0
     plot_df[plot_df$obplotno == curplotno, "psize"] <- 2.0
+    plot_df[plot_df$obplotno != curplotno & plot_df$att == "BOVOL", "pcolor"] <- "green"
     plot_df
   })
 

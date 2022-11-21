@@ -40,7 +40,7 @@ test_ribbon_long_df
 #   geom_area(aes(x = no, y = val, fill = att, ymin = 0))
 dygraph(test_ribbon_df) %>%
   dyOptions(fillGraph=TRUE, 
-            colors = c("red", "green", "grey", "grey", "coral", "aquamarine", "grey", "grey"),
+            colors = c("red", "darkgreen", "grey", "grey", "coral", "green", "grey", "grey"),
             fillAlpha = 0.50) %>% 
   dyLegend(show = c("never"))
 ```
