@@ -41,7 +41,7 @@ test_ribbon_long_df
 dygraph(test_ribbon_df) %>%
   dyOptions(fillGraph=TRUE, 
             colors = c("red", "green", "grey", "grey", "coral", "aquamarine", "grey", "grey"),
-            fillAlpha = 0.75) %>% 
+            fillAlpha = 0.50) %>% 
   dyLegend(show = c("never"))
 ```
 

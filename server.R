@@ -88,17 +88,17 @@ function(input, output, session) {
   })
 
   output$balance_plot <- renderPlot({
-    ggplot() +
-      geom_line(data = dt_b(), mapping = aes(x=nno, y=BOVOLobpcs)) +
-      geom_line(data = dt_s(), mapping = aes(x=nno, y=-SOVOLobpcs)) +
-      geom_line(data = plot_df(), mapping = aes(x=nno, y=BOVOLtdcs)) +
-      geom_line(data = plot_df(), mapping = aes(x=nno, y=-SOVOLtdcs)) +
+    # ggplot() +
+    #   geom_line(data = dt_b(), mapping = aes(x=nno, y=BOVOLobpcs)) +
+    #   geom_line(data = dt_s(), mapping = aes(x=nno, y=-SOVOLobpcs)) +
+    #   geom_line(data = plot_df(), mapping = aes(x=nno, y=BOVOLtdcs)) +
+    #   geom_line(data = plot_df(), mapping = aes(x=nno, y=-SOVOLtdcs)) +
       # geom_line(aes(x=nno, y=BTVOLobpcs)) +
       # geom_line(aes(x=nno, y=-STVOLobpcs)) +
       # geom_line(aes(x=nno, y=BTVOLtdcs)) +
       # geom_line(aes(x=nno, y=-STVOLtdcs)) +
       # # scale_y_log10() +
-      theme_bw()
+      # theme_bw()
   })
     
 }
