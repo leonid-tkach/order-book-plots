@@ -11,13 +11,13 @@ library(dygraphs)
 
 ```{r}
 test_ribbon_df <- tibble(no = c(1, 2, 3, 4, 5, 6, 7),
-                         max_std_btd = c(0, 3, 4, 4, 4, 3, 0),
-                         std = c(0, 3, 4, 4, 4, 3, 0),
-                         max_sobp_bobp = c(0, 0, 2, 3, 3, 0, 0),
                          sobp = c(0, 0, 2, 3, 3, 0, 0),
                          bobp = c(0, 0, -2, -3, -2, 0, 0),
+                         max_sobp_bobp = c(0, 0, 2, 3, 3, 0, 0),
                          minus_max_sobp_bobp = c(0, 0, -2, -3, -3, 0, 0),
+                         std = c(0, 3, 4, 4, 4, 3, 0),
                          btd = c(0, -3, -3, -4, -4, -3, 0),
+                         max_std_btd = c(0, 3, 4, 4, 4, 3, 0),
                          minus_max_std_btd = c(0, -3, -4, -4, -4, -3, 0))
 test_ribbon_df
 ```
@@ -39,7 +39,9 @@ test_ribbon_long_df
 # ggplot(test_ribbon_long_df) +
 #   geom_area(aes(x = no, y = val, fill = att, ymin = 0))
 dygraph(test_ribbon_df) %>%
-  dyOptions(fillGraph=TRUE) %>% 
+  dyOptions(fillGraph=TRUE, 
+            colors = c("red", "green", "grey", "grey", "coral", "aquamarine", "grey", "grey"),
+            fillAlpha = 0.75) %>% 
   dyLegend(show = c("never"))
 ```
 
