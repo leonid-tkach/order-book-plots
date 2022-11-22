@@ -1,11 +1,11 @@
-cursec = "LKOH"
-curdate = "2007-10-08"
-# cursec = "sec1"
-# curdate = "2007-10-01"
+# cursec = "LKOH"
+# curdate = "2007-10-08"
+cursec = "sec1"
+curdate = "2007-10-01"
 # curplotno = 302
-curplotno = 1869
+# curplotno = 1869
 # curplotno = 52
-# curplotno = 0
+curplotno = 3
 
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -22,15 +22,15 @@ onStop(function() {
   # message("after close - is valid? ", DBI::dbIsValid(pool))
 })
 
+# order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
+# obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
+
+order_atts_cumsums_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+obp_cum_atts_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+# browser()
+
 function(input, output, session) {
   plot_df <- reactive({
-    
-    order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
-    obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
-    
-    # order_atts_cumsums_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
-    # obp_cum_atts_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
-    # browser()
     
     pbegin <- obp_cum_atts_enh_pg %>%
       # filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
@@ -45,7 +45,7 @@ function(input, output, session) {
     
     plot_df <- order_atts_cumsums_enh_pg %>% 
       # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
-      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
+      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>% 
       as_tibble()
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"
@@ -77,6 +77,12 @@ function(input, output, session) {
   dt_cp_t <- reactive({
     plot_df() %>% filter(obplotno == curplotno & (att == "BTVOL" | att == "STVOL"))
   })
+  
+  balance_df <- reactive({
+    # browser()
+    plot_df() %>% select(nno, sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp,
+                         stday, btday, max_std_btd, minus_max_std_btd)
+  })
 
   output$obp_plot <- renderPlot({
     ggplot() +
@@ -93,18 +99,13 @@ function(input, output, session) {
       theme_bw()
   })
 
-  output$balance_plot <- renderPlot({
-    # ggplot() +
-    #   geom_line(data = dt_b(), mapping = aes(x=nno, y=BOVOLobpcs)) +
-    #   geom_line(data = dt_s(), mapping = aes(x=nno, y=-SOVOLobpcs)) +
-    #   geom_line(data = plot_df(), mapping = aes(x=nno, y=BOVOLtdcs)) +
-    #   geom_line(data = plot_df(), mapping = aes(x=nno, y=-SOVOLtdcs)) +
-      # geom_line(aes(x=nno, y=BTVOLobpcs)) +
-      # geom_line(aes(x=nno, y=-STVOLobpcs)) +
-      # geom_line(aes(x=nno, y=BTVOLtdcs)) +
-      # geom_line(aes(x=nno, y=-STVOLtdcs)) +
-      # # scale_y_log10() +
-      # theme_bw()
+  output$balance_plot <- renderDygraph({
+    # browser()
+    dygraph(balance_df()) %>%
+      dyOptions(fillGraph=TRUE, 
+                colors = c("red", "darkgreen", "grey", "grey", "coral", "green", "grey", "grey"),
+                fillAlpha = 0.50) %>% 
+      dyLegend(show = c("never"))
   })
     
 }

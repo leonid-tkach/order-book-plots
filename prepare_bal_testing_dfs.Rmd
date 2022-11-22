@@ -34,7 +34,9 @@ order_atts_cumsums_enhanced_df <- left_join(order_atts_cumsums_df,
          DATE, TIME_S, OBPLOTNO, ATT, VAL, 
          SHAREBAL, BPROFIT, SPROFIT, OBPMINTPRICE, OBPMAXTPRICE, 
          CBOVOLtdcs, CSOVOLtdcs, BOVOLtdcs, SOVOLtdcs, BTVOLtdcs, STVOLtdcs, 
-         CBOVOLobpcs, CSOVOLobpcs, BOVOLobpcs, SOVOLobpcs, BTVOLobpcs, STVOLobpcs)
+         CBOVOLobpcs, CSOVOLobpcs, BOVOLobpcs, SOVOLobpcs, BTVOLobpcs, STVOLobpcs,
+         sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp, stday, btday, max_std_btd,
+         minus_max_std_btd)
 order_atts_cumsums_enhanced_df
 ```
 
