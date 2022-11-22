@@ -5,7 +5,7 @@ curdate = "2007-10-01"
 # curplotno = 302
 # curplotno = 1869
 # curplotno = 52
-curplotno = 3
+curplotno = 0
 
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -80,8 +80,12 @@ function(input, output, session) {
   
   balance_df <- reactive({
     # browser()
-    plot_df() %>% select(nno, sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp,
-                         stday, btday, max_std_btd, minus_max_std_btd)
+    bal_df <- plot_df() %>% select(nno, sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp,
+                                   stday, btday, max_std_btd, minus_max_std_btd,
+                                   obplotno)
+    bal_df[bal_df$obplotno != curplotno, 
+           c("sobp", "bobp", "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
+    bal_df %>% select(-obplotno) %>% fill(sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp)
   })
 
   output$obp_plot <- renderPlot({
@@ -103,7 +107,7 @@ function(input, output, session) {
     # browser()
     dygraph(balance_df()) %>%
       dyOptions(fillGraph=TRUE, 
-                colors = c("red", "darkgreen", "grey", "grey", "coral", "green", "grey", "grey"),
+                colors = c("red", "darkgreen", "grey25", "grey25", "coral", "green", "grey", "grey"),
                 fillAlpha = 0.50) %>% 
       dyLegend(show = c("never"))
   })
