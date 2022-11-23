@@ -80,12 +80,17 @@ function(input, output, session) {
   
   balance_df <- reactive({
     # browser()
-    bal_df <- plot_df() %>% select(nno, sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp,
-                                   stday, btday, max_std_btd, minus_max_std_btd,
-                                   obplotno)
-    bal_df[bal_df$obplotno != curplotno, 
-           c("sobp", "bobp", "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
-    bal_df %>% select(-obplotno) %>% fill(sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp)
+    bal_df <- plot_df() %>% select(nno, 
+                                                   # max_std_btd, minus_max_std_btd, 
+                                                   sobp, bobp,
+                                                   max_sobp_bobp, minus_max_sobp_bobp,
+                                                   # stday, btday, 
+                                                   obplotno)
+    bal_df[bal_df$obplotno != curplotno,
+           c("max_sobp_bobp", "minus_max_sobp_bobp", "sobp", "bobp")] <- NA
+    bal_df %>% 
+      select(-obplotno) %>%
+      fill(sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp)
   })
 
   output$obp_plot <- renderPlot({
@@ -107,9 +112,12 @@ function(input, output, session) {
     # browser()
     dygraph(balance_df()) %>%
       dyOptions(fillGraph=TRUE, 
-                colors = c("red", "darkgreen", "grey25", "grey25", "coral", "green", "grey", "grey"),
-                fillAlpha = 0.50) %>% 
-      dyLegend(show = c("never"))
+                colors = c(#"grey", "grey", 
+                           "coral", "green", 
+                           "grey", "grey"), 
+                           # "red", "darkgreen"),
+                fillAlpha = 1.0) %>% 
+      dyLegend(show = c("always"))
   })
     
 }
