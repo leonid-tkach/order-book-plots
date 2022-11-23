@@ -1,11 +1,11 @@
-# cursec = "LKOH"
-# curdate = "2007-10-08"
-cursec = "sec1"
-curdate = "2007-10-01"
+cursec = "LKOH"
+curdate = "2007-10-08"
+# cursec = "sec1"
+# curdate = "2007-10-01"
 # curplotno = 302
-# curplotno = 1869
+curplotno = 1869
 # curplotno = 52
-curplotno = 0
+# curplotno = 0
 
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -45,7 +45,7 @@ function(input, output, session) {
     
     plot_df <- order_atts_cumsums_enh_pg %>% 
       # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
-      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>% 
+      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
       as_tibble()
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"
