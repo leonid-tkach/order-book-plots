@@ -3,8 +3,9 @@ curdate = "2007-10-08"
 # cursec = "sec1"
 # curdate = "2007-10-01"
 # curplotno = 302
-curplotno = 1869
+# curplotno = 1869
 # curplotno = 52
+curplotno = 1526
 # curplotno = 0
 
 pool  <- dbPool(
@@ -105,6 +106,7 @@ function(input, output, session) {
                  color = dt_cp_sb()$pcolor, shape = dt_cp_sb()$pshape, size = dt_cp_sb()$psize) +
       geom_point(data = dt_cp_t(), mapping = aes(x = nno, y = price),
                  color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
+      scale_x_continuous(expand = c(0, 0)) +
       theme_bw()
   })
 
