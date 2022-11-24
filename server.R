@@ -4,8 +4,10 @@ curdate = "2007-10-08"
 # curdate = "2007-10-01"
 # curplotno = 302
 # curplotno = 1869
-# curplotno = 52
-curplotno = 1526
+curplotno = 52
+# curplotno = 2571
+# curplotno = 2452
+# curplotno = 2482
 # curplotno = 0
 
 pool  <- dbPool(
@@ -34,19 +36,24 @@ function(input, output, session) {
   plot_df <- reactive({
     
     pbegin <- obp_cum_atts_enh_pg %>%
-      # filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
       filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
       pull(obpbegin)
-    # browser()
-    
+
     pend <- obp_cum_atts_enh_pg %>%
-      # filter(seccode == "LKOH" & ddate == "2007-10-08" & obplotno == curplotno) %>% 
       filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
       pull(obpend)
     
+    pmintprice <- obp_cum_atts_enh_pg %>%
+      filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
+      pull(obpmintradeprice)
+    
+    pmaxtprice <- obp_cum_atts_enh_pg %>%
+      filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
+      pull(obpmaxtradeprice)
+    
     plot_df <- order_atts_cumsums_enh_pg %>% 
       # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
-      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
+      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price >= pmintprice & price <= pmaxtprice) %>% 
       as_tibble()
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"
