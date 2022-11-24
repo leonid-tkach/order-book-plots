@@ -103,7 +103,7 @@ function(input, output, session) {
                                    # max_std_btd, minus_max_std_btd, 
                                    sobp, bobp,
                                    max_sobp_bobp, minus_max_sobp_bobp,
-                                   # stday, btday, 
+                                   stday, btday,
                                    obplotno)
     bal_df[bal_df$obplotno != curplotno,
            c("max_sobp_bobp", "minus_max_sobp_bobp", "sobp", "bobp")] <- NA
@@ -124,10 +124,6 @@ function(input, output, session) {
                  color = dt_cp_sb()$pcolor, shape = dt_cp_sb()$pshape, size = dt_cp_sb()$psize) +
       geom_point(data = dt_cp_t(), mapping = aes(x = nno, y = price),
                  color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
-      # geom_line(dt_minmax_tprice(), mapping = aes(x = nno, y = mintprice),
-      #           size = 2) +
-      # geom_line(dt_minmax_tprice(), mapping = aes(x = nno, y = maxtprice),
-      #           size = 2) +
       scale_x_continuous(expand = c(0, 0)) +
       theme_bw()
   })
@@ -137,9 +133,9 @@ function(input, output, session) {
     dygraph(balance_df()) %>%
       dyOptions(fillGraph=TRUE, 
                 colors = c(#"grey", "grey", 
-                           "coral", "green", 
-                           "grey", "grey"), 
-                           # "red", "darkgreen"),
+                "red", "darkgreen", 
+                "darkgrey", "darkgrey", 
+                "coral", "green"),
                 fillAlpha = 1.0) %>% 
       dyLegend(show = c("always"))
   })

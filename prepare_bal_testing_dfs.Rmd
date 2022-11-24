@@ -49,9 +49,7 @@ obp_minmax_atts_df <- order_atts_cumsums_enhanced_df %>%
          DATETIMEMLLS, PRICE, TRADEPRICE) %>% 
   group_by(SECCODE, DATE, OBPLOTNO) %>% 
   summarise(OBPBEGIN = min(DATETIMEMLLS), OBPEND = max(DATETIMEMLLS), 
-            OBPMINPRICE = min(PRICE), OBPMAXPRICE = max(PRICE),
-            OBPMINTRADEPRICE = if(all(is.na(TRADEPRICE))) NA else min(TRADEPRICE, na.rm=TRUE), 
-            OBPMAXTRADEPRICE = if(all(is.na(TRADEPRICE))) NA else max(TRADEPRICE, na.rm=TRUE))
+            OBPMINPRICE = min(PRICE), OBPMAXPRICE = max(PRICE))
 obp_minmax_atts_df
 ```
 
@@ -63,12 +61,10 @@ obp_cum_minmax_atts_df <- left_join(obp_cum_atts_df,
                                                                   OBPBEGIN,
                                                                   OBPEND,
                                                                   OBPMINPRICE,
-                                                                  OBPMAXPRICE,
-                                                                  OBPMINTRADEPRICE,
-                                                                  OBPMAXTRADEPRICE),
+                                                                  OBPMAXPRICE),
                                     by = c("SECCODE", "DATE", "OBPLOTNO")) %>% 
   select(SECCODE, DATE, OBPLOTNO, TRADEVOL, BUYSELLOBP,
-         OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE, OBPMINTRADEPRICE, OBPMAXTRADEPRICE,
+         OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE,
          TRADESNOTRADES) #, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO)
 obp_cum_minmax_atts_df
 ```
@@ -83,7 +79,7 @@ obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
                                   by = c("SECCODE", "DATE", "OBPLOTNO")) %>% 
   select(SECCODE, DATE, OBPLOTNO, TRADEVOL, BUYSELLOBP,
          BPROFIT, SPROFIT,
-         OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE, OBPMINTRADEPRICE, OBPMAXTRADEPRICE,
+         OBPBEGIN, OBPEND, OBPMINPRICE, OBPMAXPRICE,
          TRADESNOTRADES) %>% #, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO) %>% 
   rename("seccode" = "SECCODE",
          "ddate" = "DATE",
@@ -96,8 +92,6 @@ obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
          "obpend" = "OBPEND",
          "obpminprice" = "OBPMINPRICE",
          "obpmaxprice" = "OBPMAXPRICE",
-         "obpmintradeprice" = "OBPMINTRADEPRICE",
-         "obpmaxtradeprice" = "OBPMAXTRADEPRICE",
          "tradesnotrades" = "TRADESNOTRADES") %>% 
   distinct()
          # "buysellyield" = "BUYSELLYIELD",
