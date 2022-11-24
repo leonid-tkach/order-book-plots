@@ -2,8 +2,8 @@ cursec = "LKOH"
 curdate = "2007-10-08"
 # cursec = "sec1"
 # curdate = "2007-10-01"
-curplotno = 302
-# curplotno = 1869
+# curplotno = 302
+curplotno = 1869
 # curplotno = 52
 # curplotno = 2571
 # curplotno = 2452
@@ -42,14 +42,6 @@ function(input, output, session) {
     pend <- obp_cum_atts_enh_pg %>%
       filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
       pull(obpend)
-    
-    # pmintprice <- obp_cum_atts_enh_pg %>%
-    #   filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
-    #   pull(obpmintradeprice)
-    # 
-    # pmaxtprice <- obp_cum_atts_enh_pg %>%
-    #   filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
-    #   pull(obpmaxtradeprice)
     
     plot_df <- order_atts_cumsums_enh_pg %>% 
       # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
