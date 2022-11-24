@@ -3,8 +3,8 @@ curdate = "2007-10-08"
 # cursec = "sec1"
 # curdate = "2007-10-01"
 # curplotno = 302
-# curplotno = 1869
-curplotno = 52
+curplotno = 1869
+# curplotno = 52
 # curplotno = 2571
 # curplotno = 2452
 # curplotno = 2482
@@ -53,7 +53,7 @@ function(input, output, session) {
     
     plot_df <- order_atts_cumsums_enh_pg %>% 
       # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
-      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price >= pmintprice & price <= pmaxtprice) %>% 
+      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% #& price >= pmintprice & price <= pmaxtprice) %>% 
       as_tibble()
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"
@@ -86,6 +86,13 @@ function(input, output, session) {
     plot_df() %>% filter(obplotno == curplotno & (att == "BTVOL" | att == "STVOL"))
   })
   
+  dt_minmax_tprice <- reactive({
+    plot_df() %>% 
+      filter(att == "BTVOL" | att == "STVOL") %>% 
+      mutate(mintprice = cummin(tradeprice), maxtprice = cummax(tradeprice)) %>% 
+      select(nno, mintprice, maxtprice)
+  })
+  
   balance_df <- reactive({
     # browser()
     bal_df <- plot_df() %>% select(nno, 
@@ -113,6 +120,10 @@ function(input, output, session) {
                  color = dt_cp_sb()$pcolor, shape = dt_cp_sb()$pshape, size = dt_cp_sb()$psize) +
       geom_point(data = dt_cp_t(), mapping = aes(x = nno, y = price),
                  color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
+      geom_line(dt_minmax_tprice(), mapping = aes(x = nno, y = mintprice),
+                size = 2) +
+      geom_line(dt_minmax_tprice(), mapping = aes(x = nno, y = maxtprice),
+                size = 2) +
       scale_x_continuous(expand = c(0, 0)) +
       theme_bw()
   })
