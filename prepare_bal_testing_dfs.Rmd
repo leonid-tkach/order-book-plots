@@ -38,7 +38,7 @@ order_atts_cumsums_enhanced_df <- left_join(order_atts_cumsums_df,
                                          by = c("NO", "DATE")) %>% 
   select(NO, SECCODE, DATETIMEMLLS, PRICE, TRADEPRICE, VOLUME, 
          DATE, TIME_S, OBPLOTNO, ATT, VAL, 
-         SHAREBAL, BPROFIT, SPROFIT, OBPMINTPRICE, OBPMAXTPRICE, 
+         SHAREBAL, BPROFIT, SPROFIT, OBPMINTPRICE, OBPMAXTPRICE,
          CBOVOLtdcs, CSOVOLtdcs, BOVOLtdcs, SOVOLtdcs, BTVOLtdcs, STVOLtdcs, 
          CBOVOLobpcs, CSOVOLobpcs, BOVOLobpcs, SOVOLobpcs, BTVOLobpcs, STVOLobpcs,
          sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp, stday, btday, max_std_btd,
@@ -95,6 +95,8 @@ obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
          "obpend" = "OBPEND",
          "obpminprice" = "OBPMINPRICE",
          "obpmaxprice" = "OBPMAXPRICE",
+         "bprofit" = "BPROFIT",
+         "sprofit" = "SPROFIT",
          "tradesnotrades" = "TRADESNOTRADES") %>% 
   distinct()
          # "buysellyield" = "BUYSELLYIELD",
@@ -147,7 +149,8 @@ order_atts_cumsums_enh4_df <- order_atts_cumsums_enh2_df %>%
          "obplotno" = "OBPLOTNO",
          "att" = "ATT",
          "val" = "VAL",
-         "sharebal" = "SHAREBAL")
+         "sharebal" = "SHAREBAL") %>% 
+  select(-BPROFIT, -SPROFIT, -OBPMINTPRICE, -OBPMAXTPRICE)
 order_atts_cumsums_enh4_df %>%
   write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
 order_atts_cumsums_enh4_df
