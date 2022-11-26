@@ -3,9 +3,9 @@ curdate = "2007-10-08"
 # cursec = "sec1"
 # curdate = "2007-10-01"
 # curplotno = 302
-# curplotno = 1869
+curplotno = 1869
 # curplotno = 52
-curplotno = 2571
+# curplotno = 2571
 # curplotno = 2452
 # curplotno = 2482
 # curplotno = 0
@@ -25,23 +25,21 @@ onStop(function() {
   # message("after close - is valid? ", DBI::dbIsValid(pool))
 })
 
-# order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
-# obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
-
-order_atts_cumsums_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
-obp_cum_atts_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
-
-pbegin <- obp_cum_atts_enh_pg %>%
-  filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
-  pull(obpbegin)
-
-pend <- obp_cum_atts_enh_pg %>%
-  filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
-  pull(obpend)
-
-# browser()
-
 function(input, output, session) {
+  # order_atts_cumsums_enh_pg <- pool %>% tbl("order_atts_cumsums_enh4")
+  # obp_cum_atts_enh_pg <- pool %>% tbl("obp_cum_atts_enh")
+  
+  order_atts_cumsums_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+  obp_cum_atts_enh_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+  
+  pbegin <- obp_cum_atts_enh_pg %>%
+    filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
+    pull(obpbegin)
+  
+  pend <- obp_cum_atts_enh_pg %>%
+    filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
+    pull(obpend)
+  
   plot_df <- reactive({
     
     plot_df <- order_atts_cumsums_enh_pg %>% 
