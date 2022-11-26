@@ -100,9 +100,25 @@ obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
          # "buysellyield" = "BUYSELLYIELD",
          # "obptdvolratio" = "OBPTDVOLRATIO",
          # "minmaxratio" = "MINMAXRATIO")
-obp_cum_atts_enh_df %>% 
-  write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
 obp_cum_atts_enh_df
+```
+
+```{r}
+td_vol_sum_df <- obp_cum_atts_enh_df %>% 
+  group_by(seccode, ddate) %>% 
+  summarise(tdvolsum = sum(tradevol))
+
+obp_cum_atts_enh_volarranged_df <- left_join(obp_cum_atts_enh_df,
+          td_vol_sum_df,
+          by = c("seccode", "ddate")) %>% 
+  mutate(obpshareintd = tradevol / tdvolsum) %>% 
+  select(-tdvolsum) %>% 
+  arrange(seccode, ddate, desc(obpshareintd))
+
+obp_cum_atts_enh_volarranged_df %>%
+  write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+
+obp_cum_atts_enh_volarranged_df
 ```
 
 ```{r}
