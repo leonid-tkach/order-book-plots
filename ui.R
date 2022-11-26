@@ -7,6 +7,6 @@ library(dygraphs)
 
 fluidPage(
   "order-book-plots",
-  plotOutput("obp_plot"),
-  dygraphOutput("balance_plot")
+  plotOutput("obplot"),
+  dygraphOutput("balance_obplot")
 )
