@@ -117,6 +117,7 @@ obp_cum_atts_enh_volarranged_df <- left_join(obp_cum_atts_enh_df,
   select(-tdvolsum) %>% 
   arrange(seccode, ddate, desc(obpshareintd))
 
+options(digits.secs = 3)
 obp_cum_atts_enh_volarranged_df %>%
   write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv",
             na = "")
@@ -152,7 +153,7 @@ order_atts_cumsums_enh4_df <- order_atts_cumsums_enh2_df %>%
          "val" = "VAL",
          "sharebal" = "SHAREBAL") %>% 
   select(-BPROFIT, -SPROFIT, -OBPMINTPRICE, -OBPMAXTPRICE)
-options(digits.secs = 3)
+# options(digits.secs = 3)
 order_atts_cumsums_enh4_df %>%
   write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv",
             na = "")
