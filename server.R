@@ -1,10 +1,12 @@
+options(digits.secs = 3)
+
 cursec = "LKOH"
 curdate = "2007-10-08"
 # cursec = "sec1"
 # curdate = "2007-10-01"
 # curplotno = 302
-# curplotno = 1869
-curplotno = 52
+curplotno = 1869
+# curplotno = 52
 # curplotno = 2571
 # curplotno = 2452
 # curplotno = 2482
@@ -26,11 +28,13 @@ onStop(function() {
 })
 
 function(input, output, session) {
-  order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
-  obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
+  # order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
+  # obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
   
-  # order_atts_cumsums_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
-  # obp_cum_atts_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+  order_atts_cumsums_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+  obp_cum_atts_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+  
+  # browser()
   
   pbegin <- obp_cum_atts_pg %>%
     filter(seccode == cursec & ddate == curdate & obplotno == curplotno) %>% 
@@ -41,22 +45,25 @@ function(input, output, session) {
     pull(obpend)
   
   plot_df <- reactive({
-    
+    # browser()
     plot_df <- order_atts_cumsums_pg %>% 
-      # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>% 
-      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>% # & price >= pmintprice & price <= pmaxtprice) %>% 
+      # filter(seccode == "LKOH" & ddate == "2007-10-08" & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL") & price > 2145.0 & price < 2205.0) %>%       filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>% # & price >= pmintprice & price <= pmaxtprice) %>% 
+      filter(seccode == cursec & ddate == curdate & (datetimemlls >= pbegin & datetimemlls <= pend) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>% # & price >= pmintprice & price <= pmaxtprice) %>%
       as_tibble()
     # browser()
-    pmintprice <- min(plot_df %>% 
-                        filter(att == "BTVOL" | att == "STVOL") %>% 
-                        .$tradeprice %>% 
+    pmintprice <- min(plot_df %>%
+                        filter(att == "BTVOL" | att == "STVOL") %>%
+                        .$tradeprice %>%
                         cummin())
-    pmaxtprice <- max(plot_df %>% 
-                        filter(att == "BTVOL" | att == "STVOL") %>% 
-                        .$tradeprice %>% 
+    pmaxtprice <- max(plot_df %>%
+                        filter(att == "BTVOL" | att == "STVOL") %>%
+                        .$tradeprice %>%
                         cummax())
-    plot_df <- plot_df %>% 
+    plot_df <- plot_df %>%
       filter(price >= pmintprice & price <= pmaxtprice)
+    
+    # plot_df <- plot_df %>%
+    #   filter(price > 2145.0 & price < 2205.0)
     
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
     plot_df[plot_df$obplotno == curplotno & plot_df$att == "SOVOL", "pcolor"] <- "red"
@@ -70,6 +77,7 @@ function(input, output, session) {
   })
 
   dt_s <- reactive({
+    # browser()
     plot_df() %>% filter(obplotno != curplotno & att == "SOVOL")
   })
   
@@ -104,18 +112,22 @@ function(input, output, session) {
                                    stday, btday,
                                    max_std_btd, minus_max_std_btd,
                                    obplotno)
+    # browser()
     bal_df[bal_df$obplotno != curplotno,
            c("sobp", "bobp", "max_sobp_bobp", "minus_max_sobp_bobp", "stday", "btday",
              "max_std_btd", "minus_max_std_btd")] <- NA
     bal_df[bal_df$datetimemlls > pend,
            c("sobp", "bobp", "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
-    bal_df %>% 
-      select(-obplotno, -datetimemlls) %>%
-      fill(sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp, stday, btday, 
-           max_std_btd, minus_max_std_btd)
+    bal_df <- bal_df %>% 
+      select(-obplotno, -datetimemlls)
+    bal_df <- bal_df %>% fill(sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp, stday, btday,
+                    max_std_btd, minus_max_std_btd)
+    # browser()
+    bal_df
   })
 
   output$obplot <- renderPlot({
+    # browser()
     plot <- ggplot() +
       geom_point(data = dt_s(), mapping = aes(x = nno, y = price),# alpha = val),
                  color = dt_s()$pcolor, shape = dt_s()$pshape, size = dt_s()$psize) +
@@ -135,7 +147,6 @@ function(input, output, session) {
   })
 
   output$balance_obplot <- renderDygraph({
-    # browser()
     dygraph(balance_df()) %>%
       dyOptions(fillGraph=TRUE, 
                 colors = c("red", "darkgreen", 
