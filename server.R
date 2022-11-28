@@ -48,7 +48,9 @@ function(input, output, session) {
       as_tibble()
     obplots_df %>% 
       mutate(obpbegin = format(obpbegin, format = "%H:%M:%S"), 
-             obpend = format(obpend, format = "%H:%M:%S"))
+             obpend = format(obpend, format = "%H:%M:%S"),
+             share_in_td_vol = sprintf("%1.2f%%", 100*obpshareintd)) %>% 
+      select(obplotno, share_in_td_vol, obpbegin, obpend, -obpshareintd)
   })
   
   cur_obplotno <- reactive({
