@@ -44,13 +44,15 @@ function(input, output, session) {
   
   obplots_df <- reactive({
     obplots_df <- obp_cum_atts_pg %>% 
-      select(obplotno, obpshareintd, obpbegin, obpend) %>% 
-      as_tibble()
+      select(obplotno, obpshareintd, obpbegin, obpend, tradesnotrades) %>% 
+      as_tibble() %>% 
+      filter(tradesnotrades == "T")
     obplots_df %>% 
       mutate(obpbegin = format(obpbegin, format = "%H:%M:%S"), 
              obpend = format(obpend, format = "%H:%M:%S"),
              share_in_td_vol = sprintf("%1.2f%%", 100*obpshareintd)) %>% 
-      select(obplotno, share_in_td_vol, obpbegin, obpend, -obpshareintd)
+      select(obplotno, share_in_td_vol, obpbegin, obpend, 
+             -obpshareintd, -tradesnotrades)
   })
   
   cur_obplotno <- reactive({
