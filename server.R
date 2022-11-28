@@ -24,10 +24,6 @@ function(input, output, session) {
       as.list()
   })
   
-  cur_ticker <- reactive({
-    tickers_l()[1] %>% unlist()
-  })
-  
   dates_l <- reactive({
     order_atts_cumsums_pg %>%
       pull(ddate) %>%
@@ -36,23 +32,21 @@ function(input, output, session) {
       as.list()
   })
   
-  cur_date <- reactive({
-    # browser()
-    dates_l()[1] %>% 
-      unlist()
-  })
-  
   obplots_df <- reactive({
+    # browser()
     obplots_df <- obp_cum_atts_pg %>% 
-      select(obplotno, obpshareintd, obpbegin, obpend, tradesnotrades) %>% 
+      select(obplotno, obpshareintd, obpbegin, obpend, 
+             tradesnotrades, seccode, ddate) %>% 
       as_tibble() %>% 
-      filter(tradesnotrades == "T")
+      filter(tradesnotrades == "T") %>% 
+      filter(seccode == cur_ticker(),
+             ddate == cur_date())
     obplots_df %>% 
       mutate(obpbegin = format(obpbegin, format = "%H:%M:%S"), 
              obpend = format(obpend, format = "%H:%M:%S"),
              share_in_td_vol = sprintf("%1.2f%%", 100*obpshareintd)) %>% 
       select(obplotno, share_in_td_vol, obpbegin, obpend, 
-             -obpshareintd, -tradesnotrades)
+             -obpshareintd, -tradesnotrades, -seccode, -ddate)
   })
   
   cur_obplotno <- reactive({
@@ -67,10 +61,18 @@ function(input, output, session) {
                        choiceValues = tickers_l())
   })
   
+  cur_ticker <- reactive({
+    input$tickers_rb
+  })
+  
   observeEvent(dates_l, {
     updateRadioButtons(session, "dates_rb", "Choose date:", 
                        choiceNames = dates_l(), 
                        choiceValues = dates_l())
+  })
+  
+  cur_date <- reactive({
+    input$dates_rb
   })
   
   output$obplots_rtbl <- renderReactable({

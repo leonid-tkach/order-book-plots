@@ -7,7 +7,6 @@ library(dygraphs)
 library(reactable)
 
 fluidPage(
-  "order-book-plots",
   fluidRow(
     column(3,
            radioButtons("tickers_rb", "Choose ticker:", "")),
