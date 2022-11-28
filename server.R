@@ -43,9 +43,12 @@ function(input, output, session) {
   })
   
   obplots_df <- reactive({
-    obp_cum_atts_pg %>% 
-      select(obplotno, obpshareintd) %>% 
+    obplots_df <- obp_cum_atts_pg %>% 
+      select(obplotno, obpshareintd, obpbegin, obpend) %>% 
       as_tibble()
+    obplots_df %>% 
+      mutate(obpbegin = format(obpbegin, format = "%H:%M:%S"), 
+             obpend = format(obpend, format = "%H:%M:%S"))
   })
   
   cur_obplotno <- reactive({
@@ -67,7 +70,7 @@ function(input, output, session) {
   })
   
   output$obplots_rtbl <- renderReactable({
-    reactable(obplots_df())
+    reactable(obplots_df(), defaultPageSize = 5)
   })
   
   output$cur_ticker <- renderPrint({
