@@ -42,25 +42,33 @@ function(input, output, session) {
       unlist()
   })
   
-  obplots_l <- obp_cum_atts_pg
-  
-  output$tickers <- renderUI({
-    radioButtons("tickers_rb", "Choose ticker:", 
-                 choiceNames = tickers_l(), 
-                 choiceValues = tickers_l())
+  obplots_df <- reactive({
+    obp_cum_atts_pg %>% 
+      select(obplotno, obpshareintd) %>% 
+      as_tibble()
   })
   
-  output$dates <- renderUI({
-    radioButtons("dates_rb", "Choose date:", 
-                 choiceNames = dates_l(), 
-                 choiceValues = dates_l())
+  cur_obplotno <- reactive({
+    obplots_df()[1, 1] %>% 
+      unlist() %>% 
+      .[["obplotno"]]
   })
   
-  # output$obplots <- renderUI({
-  #   radioButtons("dates_rb", "Choose date:", 
-  #                choiceNames = dates_l, 
-  #                choiceValues = dates_l)
-  # })
+  observeEvent(tickers_l, {
+    updateRadioButtons(session, "tickers_rb", "Choose ticker:", 
+                       choiceNames = tickers_l(), 
+                       choiceValues = tickers_l())
+  })
+  
+  observeEvent(dates_l, {
+    updateRadioButtons(session, "dates_rb", "Choose date:", 
+                       choiceNames = dates_l(), 
+                       choiceValues = dates_l())
+  })
+  
+  output$obplots_rtbl <- renderReactable({
+    reactable(obplots_df())
+  })
   
   output$cur_ticker <- renderPrint({
     cur_ticker()
@@ -68,6 +76,10 @@ function(input, output, session) {
   
   output$cur_date <- renderPrint({
     cur_date()
+  })
+
+  output$cur_obplotno <- renderPrint({
+    cur_obplotno()
   })
   
 }
