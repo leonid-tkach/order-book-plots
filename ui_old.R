@@ -7,7 +7,6 @@ library(dygraphs)
 
 fluidPage(
   "order-book-plots",
-  fluidRow(
-    uiOutput("tickers")
-  )
+  plotOutput("obplot"),
+  dygraphOutput("balance_obplot")
 )
