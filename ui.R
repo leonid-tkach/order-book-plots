@@ -8,6 +8,19 @@ library(dygraphs)
 fluidPage(
   "order-book-plots",
   fluidRow(
-    uiOutput("tickers")
+    column(3,
+           uiOutput("tickers")),
+    column(3,
+           uiOutput("dates")),
+    column(6,
+           uiOutput("obplots"))
+  ),
+  fluidRow(
+    column(3,
+           verbatimTextOutput("cur_ticker")),
+    column(3,
+           verbatimTextOutput("cur_date")),
+    column(6,
+           verbatimTextOutput("cur_obplot"))
   )
 )
