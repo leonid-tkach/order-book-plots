@@ -119,10 +119,6 @@ function(input, output, session) {
       .$obpend
   })
   
-  # output$for_plot <- renderPrint({
-  #   paste(pbegin(), pend())
-  # })
-  
   obp_plot_df <- reactive({
     # browser()
     req(cur_ticker(), cur_date(), pbegin(), pend())
@@ -184,13 +180,6 @@ function(input, output, session) {
     req(obp_plot_df(), cur_obplotno())
     obp_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
-  
-  # dt_minmax_tprice <- reactive({
-  #   plot_df() %>% 
-  #     filter(att == "BTVOL" | att == "STVOL") %>% 
-  #     mutate(mintprice = cummin(tradeprice), maxtprice = cummax(tradeprice)) %>% 
-  #     select(nno, mintprice, maxtprice)
-  # })
   
   obp_balance_df <- reactive({
     # browser()
