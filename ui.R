@@ -16,17 +16,8 @@ fluidPage(
            tags$b("Choose order-book plot (ordered by share in trading day volume):"),
            dataTableOutput("obplots_rtbl"))
   ),
-  fluidRow(
-    column(3,
-           verbatimTextOutput("cur_ticker")),
-    column(3,
-           verbatimTextOutput("cur_date")),
-    column(6,
-           verbatimTextOutput("cur_obplotno"))
-  ),
-  # fluidRow(
-  #   verbatimTextOutput("for_plot")
-  # )
+  plotOutput("tdplot"),
+  dygraphOutput("balance_tdplot"),
   plotOutput("obplot"),
   dygraphOutput("balance_obplot")
 )
