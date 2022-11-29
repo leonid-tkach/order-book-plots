@@ -23,5 +23,10 @@ fluidPage(
            verbatimTextOutput("cur_date")),
     column(6,
            verbatimTextOutput("cur_obplotno"))
-  )
+  ),
+  # fluidRow(
+  #   verbatimTextOutput("for_plot")
+  # )
+  plotOutput("obplot"),
+  dygraphOutput("balance_obplot")
 )
