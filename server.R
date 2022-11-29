@@ -121,6 +121,8 @@ function(input, output, session) {
       .$obpend
   })
   
+  pmintprice <- 0
+  pmaxtprice <- 0
   obp_plot_df <- reactive({
     # browser()
     req(cur_ticker(), cur_date(), pbegin(), pend())
@@ -132,16 +134,16 @@ function(input, output, session) {
       filter(seccode == c_t & ddate == c_d & (datetimemlls >= pb & datetimemlls <= pe) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>%
       as_tibble()
     # browser()
-    pmintprice <- min(plot_df %>%
+    pmintprice <<- min(plot_df %>%
                         filter(att == "BTVOL" | att == "STVOL") %>%
                         .$tradeprice %>%
                         cummin())
-    pmaxtprice <- max(plot_df %>%
+    pmaxtprice <<- max(plot_df %>%
                         filter(att == "BTVOL" | att == "STVOL") %>%
                         .$tradeprice %>%
                         cummax())
-    plot_df <- plot_df %>%
-      filter(price >= pmintprice & price <= pmaxtprice)
+    # plot_df <- plot_df %>%
+    #   filter(price >= pmintprice & price <= pmaxtprice)
     
     # plot_df <- plot_df %>%
     #   filter(price > 2145.0 & price < 2205.0)
@@ -157,6 +159,8 @@ function(input, output, session) {
     plot_df
   })
   
+  tdmintprice <- 0
+  tdmaxtprice <- 0
   td_plot_df <- reactive({
     # browser()
     req(cur_ticker(), cur_date(), pbegin(), pend())
@@ -168,16 +172,16 @@ function(input, output, session) {
       filter(seccode == c_t & ddate == c_d & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>%
       as_tibble()
     # browser()
-    tdmintprice <- min(td_plot_df %>%
+    tdmintprice <<- min(td_plot_df %>%
                         filter(att == "BTVOL" | att == "STVOL") %>%
                         .$tradeprice %>%
                         cummin())
-    tdmaxtprice <- max(td_plot_df %>%
+    tdmaxtprice <<- max(td_plot_df %>%
                         filter(att == "BTVOL" | att == "STVOL") %>%
                         .$tradeprice %>%
                         cummax())
-    td_plot_df <- td_plot_df %>%
-      filter(price >= tdmintprice & price <= tdmaxtprice)
+    # td_plot_df <- td_plot_df %>%
+    #   filter(price >= tdmintprice & price <= tdmaxtprice)
     
     # plot_df <- plot_df %>%
     #   filter(price > 2145.0 & price < 2205.0)
@@ -316,6 +320,7 @@ function(input, output, session) {
       geom_point(data = obp_cp_t(), mapping = aes(x = nno, y = price),
                  color = obp_cp_t()$pcolor, shape = obp_cp_t()$pshape, size = obp_cp_t()$psize) +
       scale_x_continuous(expand = c(0, 0)) +
+      ylim(pmintprice, pmaxtprice) +
       theme_bw()
     
     plot +
@@ -350,6 +355,7 @@ function(input, output, session) {
       geom_point(data = td_cp_t(), mapping = aes(x = nno, y = price),
                  color = td_cp_t()$pcolor, shape = td_cp_t()$pshape, size = td_cp_t()$psize) +
       scale_x_continuous(expand = c(0, 0)) +
+      ylim(tdmintprice, tdmaxtprice) +
       theme_bw()
     
     plot +
