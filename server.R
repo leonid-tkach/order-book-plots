@@ -54,6 +54,9 @@ function(input, output, session) {
     obplots_df()[1, 1] %>% 
       unlist() %>% 
       .[["obplotno"]]
+    
+    # state <- getReactableState("obplots_rtbl")
+    # browser()
   })
   
   observeEvent(tickers_l, {
@@ -76,12 +79,13 @@ function(input, output, session) {
     input$dates_rb
   })
   
-  output$obplots_rtbl <- renderReactable({
-    reactable(obplots_df() %>% 
+  output$obplots_rtbl <- renderDT(
+    obplots_df() %>% 
                 select(-obpshareintd, -tradesnotrades, -seccode, -ddate,
-                       -obpbegin, -obpend), 
-              defaultPageSize = 5)
-  })
+                       -obpbegin, -obpend)
+              # onClick = "select",
+              # defaultPageSize = 5)
+  )
   
   output$cur_ticker <- renderPrint({
     cur_ticker()

@@ -4,7 +4,7 @@ library(DBI)
 library(RPostgres)
 library(pool)
 library(dygraphs)
-library(reactable)
+library(DT)
 
 fluidPage(
   fluidRow(
@@ -14,7 +14,7 @@ fluidPage(
            radioButtons("dates_rb", "Choose date:", "")),
     column(6,
            tags$b("Choose order-book plot (ordered by share in trading day volume):"),
-           reactableOutput("obplots_rtbl"))
+           DTOutput("obplots_rtbl"))
   ),
   fluidRow(
     column(3,
