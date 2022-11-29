@@ -54,14 +54,15 @@ function(input, output, session) {
     # obplots_df()[1, 1] %>% 
     #   unlist() %>% 
     #   .[["obplotno"]]
+    # browser()
     selected <- input$obplots_rtbl_rows_selected
     # browser()
     if(length(selected)) {
-      isolate(
-        obplots_df()[selected, "obplotno"] %>% 
-          unlist() %>% 
-          .[["obplotno"]]
-      )
+      return(
+        isolate(
+          obplots_df()[selected, "obplotno"] %>% 
+            unlist() %>% 
+            .[["obplotno"]]))
     }
   })
   
@@ -86,24 +87,13 @@ function(input, output, session) {
   })
   
   output$obplots_rtbl <- renderDT({
+    # browser()
     datatable(obplots_df() %>% 
       select(-obpshareintd, -tradesnotrades, -seccode, -ddate,
              -obpbegin, -obpend),
       options = list(pageLength = 5),
-      selection = 'single')
-  })
-  
-  output$cur_ticker <- renderPrint({
-    cur_ticker()
-  })
-  
-  output$cur_date <- renderPrint({
-    cur_date()
-  })
-
-  output$cur_obplotno <- renderPrint({
-    # browser()
-    cur_obplotno()
+      selection = list(mode = "single",
+                       selected = 1))
   })
   
   pbegin <- reactive({
@@ -133,7 +123,7 @@ function(input, output, session) {
   #   paste(pbegin(), pend())
   # })
   
-  plot_df <- reactive({
+  obp_plot_df <- reactive({
     # browser()
     req(cur_ticker(), cur_date(), pbegin(), pend())
     c_t <- cur_ticker()
@@ -169,30 +159,30 @@ function(input, output, session) {
     plot_df
   })
   
-  dt_s <- reactive({
+  obp_s <- reactive({
     # browser()
-    req(plot_df(), cur_obplotno())
-    plot_df() %>% filter(obplotno != cur_obplotno() & att == "SOVOL")
+    req(obp_plot_df(), cur_obplotno())
+    obp_plot_df() %>% filter(obplotno != cur_obplotno() & att == "SOVOL")
   })
   
-  dt_b <- reactive({
-    req(plot_df(), cur_obplotno())
-    plot_df() %>% filter(obplotno != cur_obplotno() & att == "BOVOL")
+  obp_b <- reactive({
+    req(obp_plot_df(), cur_obplotno())
+    obp_plot_df() %>% filter(obplotno != cur_obplotno() & att == "BOVOL")
   })
   
-  dt_t <- reactive({
-    req(plot_df(), cur_obplotno())
-    plot_df() %>% filter(obplotno != cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
+  obp_t <- reactive({
+    req(obp_plot_df(), cur_obplotno())
+    obp_plot_df() %>% filter(obplotno != cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
-  dt_cp_sb <- reactive({
-    req(plot_df(), cur_obplotno())
-    plot_df() %>% filter(obplotno == cur_obplotno() & att != "BTVOL" & att != "STVOL")
+  obp_cp_sb <- reactive({
+    req(obp_plot_df(), cur_obplotno())
+    obp_plot_df() %>% filter(obplotno == cur_obplotno() & att != "BTVOL" & att != "STVOL")
   })
   
-  dt_cp_t <- reactive({
-    req(plot_df(), cur_obplotno())
-    plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
+  obp_cp_t <- reactive({
+    req(obp_plot_df(), cur_obplotno())
+    obp_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
   # dt_minmax_tprice <- reactive({
@@ -204,8 +194,8 @@ function(input, output, session) {
   
   balance_df <- reactive({
     # browser()
-    req(plot_df())
-    bal_df <- plot_df() %>% select(nno, datetimemlls,
+    req(obp_plot_df())
+    bal_df <- obp_plot_df() %>% select(nno, datetimemlls,
                                    sobp, bobp,
                                    max_sobp_bobp, minus_max_sobp_bobp,
                                    stday, btday,
@@ -227,18 +217,18 @@ function(input, output, session) {
   
   output$obplot <- renderPlot({
     # browser()
-    req(dt_s(), dt_b(), dt_t(), dt_cp_sb(), dt_cp_t())
+    req(obp_s(), obp_b(), obp_t(), obp_cp_sb(), obp_cp_t())
     plot <- ggplot() +
-      geom_point(data = dt_s(), mapping = aes(x = nno, y = price),# alpha = val),
-                 color = dt_s()$pcolor, shape = dt_s()$pshape, size = dt_s()$psize) +
-      geom_point(data = dt_b(), mapping = aes(x = nno, y = price),# alpha = val),
-                 color = dt_b()$pcolor, shape = dt_b()$pshape, size = dt_b()$psize) +
-      geom_point(data = dt_t(), mapping = aes(x = nno, y = price),# alpha = val),
-                 color = dt_t()$pcolor, shape = dt_t()$pshape, size = dt_t()$psize) +
-      geom_point(data = dt_cp_sb(), mapping = aes(x = nno, y = price),
-                 color = dt_cp_sb()$pcolor, shape = dt_cp_sb()$pshape, size = dt_cp_sb()$psize) +
-      geom_point(data = dt_cp_t(), mapping = aes(x = nno, y = price),
-                 color = dt_cp_t()$pcolor, shape = dt_cp_t()$pshape, size = dt_cp_t()$psize) +
+      geom_point(data = obp_s(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = obp_s()$pcolor, shape = obp_s()$pshape, size = obp_s()$psize) +
+      geom_point(data = obp_b(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = obp_b()$pcolor, shape = obp_b()$pshape, size = obp_b()$psize) +
+      geom_point(data = obp_t(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = obp_t()$pcolor, shape = obp_t()$pshape, size = obp_t()$psize) +
+      geom_point(data = obp_cp_sb(), mapping = aes(x = nno, y = price),
+                 color = obp_cp_sb()$pcolor, shape = obp_cp_sb()$pshape, size = obp_cp_sb()$psize) +
+      geom_point(data = obp_cp_t(), mapping = aes(x = nno, y = price),
+                 color = obp_cp_t()$pcolor, shape = obp_cp_t()$pshape, size = obp_cp_t()$psize) +
       scale_x_continuous(expand = c(0, 0)) +
       theme_bw()
     
