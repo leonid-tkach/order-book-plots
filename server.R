@@ -289,18 +289,14 @@ function(input, output, session) {
     # browser()
     bal_df[bal_df$obplotno != cur_obplotno(),
            c("sobp", "bobp", 
-             "max_sobp_bobp", "minus_max_sobp_bobp",
-             "stday", "btday",
-             "max_std_btd", "minus_max_std_btd")] <- NA
+             "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
     bal_df[bal_df$datetimemlls > pend(),
            c("sobp", "bobp", 
              "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
     bal_df <- bal_df %>% 
       select(-obplotno, -datetimemlls)
     bal_df <- bal_df %>% fill(sobp, bobp, 
-                              max_sobp_bobp, minus_max_sobp_bobp, 
-                              stday, btday,
-                              max_std_btd, minus_max_std_btd)
+                              max_sobp_bobp, minus_max_sobp_bobp)
     # browser()
     bal_df
   })
