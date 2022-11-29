@@ -198,19 +198,24 @@ function(input, output, session) {
     bal_df <- obp_plot_df() %>% select(nno, datetimemlls,
                                    sobp, bobp,
                                    max_sobp_bobp, minus_max_sobp_bobp,
-                                   stday, btday,
-                                   max_std_btd, minus_max_std_btd,
+                                   # stday, btday,
+                                   # max_std_btd, minus_max_std_btd,
                                    obplotno)
     # browser()
     bal_df[bal_df$obplotno != cur_obplotno(),
-           c("sobp", "bobp", "max_sobp_bobp", "minus_max_sobp_bobp", "stday", "btday",
-             "max_std_btd", "minus_max_std_btd")] <- NA
+           c("sobp", "bobp", 
+             "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
+             # "stday", "btday",
+             # "max_std_btd", "minus_max_std_btd")] <- NA
     bal_df[bal_df$datetimemlls > pend(),
-           c("sobp", "bobp", "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
+           c("sobp", "bobp", 
+             "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
     bal_df <- bal_df %>% 
       select(-obplotno, -datetimemlls)
-    bal_df <- bal_df %>% fill(sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp, stday, btday,
-                              max_std_btd, minus_max_std_btd)
+    bal_df <- bal_df %>% fill(sobp, bobp, 
+                              max_sobp_bobp, minus_max_sobp_bobp) 
+                              # stday, btday,
+                              # max_std_btd, minus_max_std_btd)
     # browser()
     bal_df
   })
@@ -241,9 +246,9 @@ function(input, output, session) {
     dygraph(balance_df()) %>%
       dyOptions(fillGraph=TRUE, 
                 colors = c("red", "darkgreen", 
-                           "gray", "gray", 
-                           "coral", "green",
-                           "silver", "silver"),
+                           "gray", "gray"), 
+                           # "coral", "green",
+                           # "silver", "silver"),
                 fillAlpha = 1.0) %>% 
       dyLegend(show = c("always")) %>% 
       dyCSS("dygraph.css")
