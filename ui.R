@@ -17,5 +17,7 @@ fluidPage(
            dataTableOutput("obplots_rtbl"))
   ),
   plotOutput("obplot"),
-  dygraphOutput("balance_obplot")
+  dygraphOutput("balance_obplot"),
+  plotOutput("tdplot"),
+  dygraphOutput("balance_tdplot")
 )

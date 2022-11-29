@@ -155,47 +155,109 @@ function(input, output, session) {
     plot_df
   })
   
+  td_plot_df <- reactive({
+    # browser()
+    req(cur_ticker(), cur_date(), pbegin(), pend())
+    c_t <- cur_ticker()
+    c_d <- cur_date()
+    pb <- pbegin()
+    pe <- pend()
+    td_plot_df <- order_atts_cumsums_pg %>% 
+      filter(seccode == c_t & ddate == c_d & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>%
+      as_tibble()
+    # browser()
+    tdmintprice <- min(td_plot_df %>%
+                        filter(att == "BTVOL" | att == "STVOL") %>%
+                        .$tradeprice %>%
+                        cummin())
+    tdmaxtprice <- max(td_plot_df %>%
+                        filter(att == "BTVOL" | att == "STVOL") %>%
+                        .$tradeprice %>%
+                        cummax())
+    td_plot_df <- td_plot_df %>%
+      filter(price >= tdmintprice & price <= tdmaxtprice)
+    
+    # plot_df <- plot_df %>%
+    #   filter(price > 2145.0 & price < 2205.0)
+    
+    td_plot_df[td_plot_df$obplotno == cur_obplotno() & td_plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
+    td_plot_df[td_plot_df$obplotno == cur_obplotno() & td_plot_df$att == "SOVOL", "pcolor"] <- "red"
+    td_plot_df[td_plot_df$obplotno == cur_obplotno() & td_plot_df$att == "BTVOL", "pcolor"] <- "#8031A7"
+    # plot_df[plot_df$obplotno == curplotno, "pshape"] <- 16
+    td_plot_df[, "pshape"] <- 16
+    td_plot_df[, "psize"] <- 1.0
+    td_plot_df[td_plot_df$obplotno == cur_obplotno(), "psize"] <- 2.0
+    td_plot_df[td_plot_df$obplotno != cur_obplotno() & td_plot_df$att == "BOVOL", "pcolor"] <- "green"
+    td_plot_df
+  })
+  
   obp_s <- reactive({
     # browser()
     req(obp_plot_df(), cur_obplotno())
     obp_plot_df() %>% filter(obplotno != cur_obplotno() & att == "SOVOL")
+  })
+
+  td_s <- reactive({
+    # browser()
+    req(td_plot_df(), cur_obplotno())
+    td_plot_df() %>% filter(obplotno != cur_obplotno() & att == "SOVOL")
   })
   
   obp_b <- reactive({
     req(obp_plot_df(), cur_obplotno())
     obp_plot_df() %>% filter(obplotno != cur_obplotno() & att == "BOVOL")
   })
+
+  td_b <- reactive({
+    req(td_plot_df(), cur_obplotno())
+    td_plot_df() %>% filter(obplotno != cur_obplotno() & att == "BOVOL")
+  })
   
   obp_t <- reactive({
     req(obp_plot_df(), cur_obplotno())
     obp_plot_df() %>% filter(obplotno != cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
+  })
+
+  td_t <- reactive({
+    req(td_plot_df(), cur_obplotno())
+    td_plot_df() %>% filter(obplotno != cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
   obp_cp_sb <- reactive({
     req(obp_plot_df(), cur_obplotno())
     obp_plot_df() %>% filter(obplotno == cur_obplotno() & att != "BTVOL" & att != "STVOL")
   })
+
+  td_cp_sb <- reactive({
+    req(td_plot_df(), cur_obplotno())
+    td_plot_df() %>% filter(obplotno == cur_obplotno() & att != "BTVOL" & att != "STVOL")
+  })
   
   obp_cp_t <- reactive({
     req(obp_plot_df(), cur_obplotno())
     obp_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
+  })
+
+  td_cp_t <- reactive({
+    req(td_plot_df(), cur_obplotno())
+    td_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
   obp_balance_df <- reactive({
     # browser()
     req(obp_plot_df())
     bal_df <- obp_plot_df() %>% select(nno, datetimemlls,
-                                   sobp, bobp,
-                                   max_sobp_bobp, minus_max_sobp_bobp,
-                                   # stday, btday,
-                                   # max_std_btd, minus_max_std_btd,
-                                   obplotno)
+                                       sobp, bobp,
+                                       max_sobp_bobp, minus_max_sobp_bobp,
+                                       # stday, btday,
+                                       # max_std_btd, minus_max_std_btd,
+                                       obplotno)
     # browser()
     bal_df[bal_df$obplotno != cur_obplotno(),
            c("sobp", "bobp", 
              "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
-             # "stday", "btday",
-             # "max_std_btd", "minus_max_std_btd")] <- NA
+    # "stday", "btday",
+    # "max_std_btd", "minus_max_std_btd")] <- NA
     bal_df[bal_df$datetimemlls > pend(),
            c("sobp", "bobp", 
              "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
@@ -203,8 +265,36 @@ function(input, output, session) {
       select(-obplotno, -datetimemlls)
     bal_df <- bal_df %>% fill(sobp, bobp, 
                               max_sobp_bobp, minus_max_sobp_bobp) 
-                              # stday, btday,
-                              # max_std_btd, minus_max_std_btd)
+    # stday, btday,
+    # max_std_btd, minus_max_std_btd)
+    # browser()
+    bal_df
+  })
+  
+  td_balance_df <- reactive({
+    # browser()
+    req(td_plot_df())
+    bal_df <- td_plot_df() %>% select(nno, datetimemlls,
+                                      sobp, bobp,
+                                      max_sobp_bobp, minus_max_sobp_bobp,
+                                      stday, btday,
+                                      max_std_btd, minus_max_std_btd,
+                                      obplotno)
+    # browser()
+    bal_df[bal_df$obplotno != cur_obplotno(),
+           c("sobp", "bobp", 
+             "max_sobp_bobp", "minus_max_sobp_bobp",
+             "stday", "btday",
+             "max_std_btd", "minus_max_std_btd")] <- NA
+    bal_df[bal_df$datetimemlls > pend(),
+           c("sobp", "bobp", 
+             "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
+    bal_df <- bal_df %>% 
+      select(-obplotno, -datetimemlls)
+    bal_df <- bal_df %>% fill(sobp, bobp, 
+                              max_sobp_bobp, minus_max_sobp_bobp, 
+                              stday, btday,
+                              max_std_btd, minus_max_std_btd)
     # browser()
     bal_df
   })
@@ -242,5 +332,39 @@ function(input, output, session) {
       dyLegend(show = c("always")) %>% 
       dyCSS("dygraph.css")
   })
+
+  output$tdplot <- renderPlot({
+    # browser()
+    req(td_s(), td_b(), td_t(), td_cp_sb(), td_cp_t())
+    plot <- ggplot() +
+      geom_point(data = td_s(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = td_s()$pcolor, shape = td_s()$pshape, size = td_s()$psize) +
+      geom_point(data = td_b(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = td_b()$pcolor, shape = td_b()$pshape, size = td_b()$psize) +
+      geom_point(data = td_t(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = td_t()$pcolor, shape = td_t()$pshape, size = td_t()$psize) +
+      geom_point(data = td_cp_sb(), mapping = aes(x = nno, y = price),
+                 color = td_cp_sb()$pcolor, shape = td_cp_sb()$pshape, size = td_cp_sb()$psize) +
+      geom_point(data = td_cp_t(), mapping = aes(x = nno, y = price),
+                 color = td_cp_t()$pcolor, shape = td_cp_t()$pshape, size = td_cp_t()$psize) +
+      scale_x_continuous(expand = c(0, 0)) +
+      theme_bw()
+    
+    plot +
+      theme(plot.margin = margin(0, 0, 0, 1, "cm"))
+  })
   
+  output$balance_tdplot <- renderDygraph({
+    req(td_balance_df())
+    dygraph(td_balance_df()) %>%
+      dyOptions(fillGraph=TRUE, 
+                colors = c("red", "darkgreen", 
+                           "gray", "gray", 
+                           "coral", "green",
+                           "silver", "silver"),
+                fillAlpha = 1.0) %>% 
+      dyLegend(show = c("always")) %>% 
+      dyCSS("dygraph.css")
+  })
+    
 }
