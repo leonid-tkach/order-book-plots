@@ -24,6 +24,7 @@ function(input, output, session) {
     obp_cum_atts_pg %>%
       pull(seccode) %>%
       unique() %>%
+      sort(decreasing = TRUE) %>% 
       as.list()
   })
   
