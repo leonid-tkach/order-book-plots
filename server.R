@@ -51,12 +51,18 @@ function(input, output, session) {
   })
   
   cur_obplotno <- reactive({
-    obplots_df()[1, 1] %>% 
-      unlist() %>% 
-      .[["obplotno"]]
-    
-    # state <- getReactableState("obplots_rtbl")
+    # obplots_df()[1, 1] %>% 
+    #   unlist() %>% 
+    #   .[["obplotno"]]
+    selected <- input$obplots_rtbl_rows_selected
     # browser()
+    if(length(selected)) {
+      isolate(
+        obplots_df()[selected, "obplotno"] %>% 
+          unlist() %>% 
+          .[["obplotno"]]
+      )
+    }
   })
   
   observeEvent(tickers_l, {
@@ -79,13 +85,13 @@ function(input, output, session) {
     input$dates_rb
   })
   
-  output$obplots_rtbl <- renderDT(
-    obplots_df() %>% 
-                select(-obpshareintd, -tradesnotrades, -seccode, -ddate,
-                       -obpbegin, -obpend)
-              # onClick = "select",
-              # defaultPageSize = 5)
-  )
+  output$obplots_rtbl <- renderDT({
+    datatable(obplots_df() %>% 
+      select(-obpshareintd, -tradesnotrades, -seccode, -ddate,
+             -obpbegin, -obpend),
+      options = list(pageLength = 5),
+      selection = 'single')
+  })
   
   output$cur_ticker <- renderPrint({
     cur_ticker()
@@ -102,15 +108,24 @@ function(input, output, session) {
   
   pbegin <- reactive({
     # browser()
+    req(obplots_df(), cur_ticker(), cur_date(), cur_obplotno())
+    c_t <- cur_ticker()
+    c_d <- cur_date()
+    c_obpn <- cur_obplotno()
+    # browser()
     obplots_df() %>%
-      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
+      filter(seccode == c_t & ddate == c_d & obplotno == c_obpn) %>% 
       .$obpbegin
   })
   
   pend <- reactive({
     # browser()
+    req(obplots_df(), cur_ticker(), cur_date(), cur_obplotno())
+    c_t <- cur_ticker()
+    c_d <- cur_date()
+    c_obpn <- cur_obplotno()
     obplots_df() %>%
-      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
+      filter(seccode == c_t & ddate == c_d & obplotno == c_obpn) %>% 
       .$obpend
   })
   

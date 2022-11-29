@@ -14,7 +14,7 @@ fluidPage(
            radioButtons("dates_rb", "Choose date:", "")),
     column(6,
            tags$b("Choose order-book plot (ordered by share in trading day volume):"),
-           DTOutput("obplots_rtbl"))
+           dataTableOutput("obplots_rtbl"))
   ),
   fluidRow(
     column(3,
