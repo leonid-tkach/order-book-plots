@@ -192,7 +192,7 @@ function(input, output, session) {
   #     select(nno, mintprice, maxtprice)
   # })
   
-  balance_df <- reactive({
+  obp_balance_df <- reactive({
     # browser()
     req(obp_plot_df())
     bal_df <- obp_plot_df() %>% select(nno, datetimemlls,
@@ -242,8 +242,8 @@ function(input, output, session) {
   })
   
   output$balance_obplot <- renderDygraph({
-    req(balance_df())
-    dygraph(balance_df()) %>%
+    req(obp_balance_df())
+    dygraph(obp_balance_df()) %>%
       dyOptions(fillGraph=TRUE, 
                 colors = c("red", "darkgreen", 
                            "gray", "gray"), 
