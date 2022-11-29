@@ -119,7 +119,7 @@ function(input, output, session) {
     bal_df[bal_df$datetimemlls > pend,
            c("sobp", "bobp", "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
     bal_df <- bal_df %>% 
-      select(-obplotno, -datetimemlls)
+      select(-obplotno, -nno)#-datetimemlls)
     bal_df <- bal_df %>% fill(sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp, stday, btday,
                     max_std_btd, minus_max_std_btd)
     # browser()
