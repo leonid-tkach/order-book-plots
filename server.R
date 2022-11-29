@@ -15,8 +15,10 @@ onStop(function() {
 })
 
 function(input, output, session) {
-  order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
-  obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
+  # order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
+  # obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
+  order_atts_cumsums_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+  obp_cum_atts_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
   
   tickers_l <- reactive({
     obp_cum_atts_pg %>%
@@ -39,7 +41,7 @@ function(input, output, session) {
       select(obplotno, obpshareintd, obpbegin, obpend, 
              tradesnotrades, seccode, ddate) %>% 
       as_tibble() %>% 
-      filter(tradesnotrades == "T") %>% 
+      filter(tradesnotrades == "Y") %>% 
       filter(seccode == cur_ticker(),
              ddate == cur_date())
     obplots_df %>% 
