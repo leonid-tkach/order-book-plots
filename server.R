@@ -15,10 +15,10 @@ onStop(function() {
 })
 
 function(input, output, session) {
-  order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
-  obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
-  # order_atts_cumsums_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
-  # obp_cum_atts_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
+  # order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
+  # obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
+  order_atts_cumsums_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+  obp_cum_atts_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
   
   tickers_l <- reactive({
     obp_cum_atts_pg %>%
@@ -39,7 +39,9 @@ function(input, output, session) {
   obplots_df <- reactive({
     # browser()
     obplots_df <- obp_cum_atts_pg %>% 
-      select(obplotno, obpshareintd, obpbegin, obpend, 
+      select(obplotno, buysellobp, obpshareintd, obpbegin, obpend, 
+             obpbeginno, obpendno,
+             obpmintradeprice, obpmaxtradeprice,
              tradesnotrades, seccode, ddate) %>% 
       as_tibble() %>% 
       filter(tradesnotrades == "Y") %>% 
@@ -49,8 +51,12 @@ function(input, output, session) {
       mutate(begin = format(obpbegin, format = "%H:%M:%S"), 
              end = format(obpend, format = "%H:%M:%S"),
              share_in_td_vol = sprintf("%1.2f%%", 100*obpshareintd)) %>% 
-      select(obplotno, share_in_td_vol, begin, end, 
-             obpbegin, obpend, obpshareintd, tradesnotrades, seccode, ddate)
+      select(obplotno, buysellobp, share_in_td_vol, begin, end, 
+             obpbegin, obpend, 
+             obpbeginno, obpendno,
+             obpmintradeprice, obpmaxtradeprice,
+             obpshareintd, 
+             tradesnotrades, seccode, ddate)
   })
   
   cur_obplotno <- reactive({
@@ -102,23 +108,16 @@ function(input, output, session) {
   pbegin <- reactive({
     # browser()
     req(obplots_df(), cur_ticker(), cur_date(), cur_obplotno())
-    c_t <- cur_ticker()
-    c_d <- cur_date()
-    c_obpn <- cur_obplotno()
-    # browser()
     obplots_df() %>%
-      filter(seccode == c_t & ddate == c_d & obplotno == c_obpn) %>% 
+      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
       .$obpbegin
   })
   
   pend <- reactive({
     # browser()
     req(obplots_df(), cur_ticker(), cur_date(), cur_obplotno())
-    c_t <- cur_ticker()
-    c_d <- cur_date()
-    c_obpn <- cur_obplotno()
     obplots_df() %>%
-      filter(seccode == c_t & ddate == c_d & obplotno == c_obpn) %>% 
+      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
       .$obpend
   })
   
@@ -162,35 +161,37 @@ function(input, output, session) {
   
   tdmintprice <- 0
   tdmaxtprice <- 0
+  obpmintradeprice <- 0
+  obpmaxtradeprice <- 0
+  obpbeginno <- 0
+  obpendno <- 0
   td_plot_df <- reactive({
     # browser()
     req(cur_ticker(), cur_date(), pbegin(), pend())
-    c_t <- cur_ticker()
-    c_d <- cur_date()
-    pb <- pbegin()
-    pe <- pend()
     td_plot_df <- order_atts_cumsums_pg %>% 
-      filter(seccode == c_t & ddate == c_d & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>%
+      filter(seccode == cur_ticker() & ddate == cur_date() & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>%
       as_tibble()
     # browser()
-    tdmintprice <<- min(td_plot_df %>%
-                        filter(att == "BTVOL" | att == "STVOL") %>%
-                        .$tradeprice %>%
-                        cummin())
-    tdmaxtprice <<- max(td_plot_df %>%
-                        filter(att == "BTVOL" | att == "STVOL") %>%
-                        .$tradeprice %>%
-                        cummax())
-    # td_plot_df <- td_plot_df %>%
-    #   filter(price >= tdmintprice & price <= tdmaxtprice)
+    tdmintprice <<- min(obplots_df()$obpmintradeprice)
+    tdmaxtprice <<- max(obplots_df()$obpmaxtradeprice)
     
-    # plot_df <- plot_df %>%
-    #   filter(price > 2145.0 & price < 2205.0)
+    obpmintradeprice <<- obplots_df() %>%
+      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
+      .$obpmintradeprice
+    obpmaxtradeprice <<- obplots_df() %>%
+      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
+      .$obpmaxtradeprice
+    
+    obpbeginno <<- obplots_df() %>%
+      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
+      .$obpbeginno
+    obpendno <<- obplots_df() %>%
+      filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
+      .$obpendno
     
     td_plot_df[td_plot_df$obplotno == cur_obplotno() & td_plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
     td_plot_df[td_plot_df$obplotno == cur_obplotno() & td_plot_df$att == "SOVOL", "pcolor"] <- "red"
     td_plot_df[td_plot_df$obplotno == cur_obplotno() & td_plot_df$att == "BTVOL", "pcolor"] <- "#8031A7"
-    # plot_df[plot_df$obplotno == curplotno, "pshape"] <- 16
     td_plot_df[, "pshape"] <- 16
     td_plot_df[, "psize"] <- 1.0
     td_plot_df[td_plot_df$obplotno == cur_obplotno(), "psize"] <- 2.0
@@ -304,20 +305,21 @@ function(input, output, session) {
   
   output$obplot <- renderPlot({
     # browser()
-    req(obp_s(), obp_b(), obp_t(), obp_cp_sb(), obp_cp_t())
+    req(td_s(), td_b(), td_t(), td_cp_sb(), td_cp_t())
     plot <- ggplot() +
-      geom_point(data = obp_s(), mapping = aes(x = nno, y = price),# alpha = val),
-                 color = obp_s()$pcolor, shape = obp_s()$pshape, size = obp_s()$psize) +
-      geom_point(data = obp_b(), mapping = aes(x = nno, y = price),# alpha = val),
-                 color = obp_b()$pcolor, shape = obp_b()$pshape, size = obp_b()$psize) +
-      geom_point(data = obp_t(), mapping = aes(x = nno, y = price),# alpha = val),
-                 color = obp_t()$pcolor, shape = obp_t()$pshape, size = obp_t()$psize) +
-      geom_point(data = obp_cp_sb(), mapping = aes(x = nno, y = price),
-                 color = obp_cp_sb()$pcolor, shape = obp_cp_sb()$pshape, size = obp_cp_sb()$psize) +
-      geom_point(data = obp_cp_t(), mapping = aes(x = nno, y = price),
-                 color = obp_cp_t()$pcolor, shape = obp_cp_t()$pshape, size = obp_cp_t()$psize) +
+      geom_point(data = td_s(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = td_s()$pcolor, shape = td_s()$pshape, size = td_s()$psize) +
+      geom_point(data = td_b(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = td_b()$pcolor, shape = td_b()$pshape, size = td_b()$psize) +
+      geom_point(data = td_t(), mapping = aes(x = nno, y = price),# alpha = val),
+                 color = td_t()$pcolor, shape = td_t()$pshape, size = td_t()$psize) +
+      geom_point(data = td_cp_sb(), mapping = aes(x = nno, y = price),
+                 color = td_cp_sb()$pcolor, shape = td_cp_sb()$pshape, size = td_cp_sb()$psize) +
+      geom_point(data = td_cp_t(), mapping = aes(x = nno, y = price),
+                 color = td_cp_t()$pcolor, shape = td_cp_t()$pshape, size = td_cp_t()$psize) +
       scale_x_continuous(expand = c(0, 0)) +
-      ylim(pmintprice, pmaxtprice) +
+      xlim(obpbeginno, obpendno) +
+      ylim(obpmintradeprice, obpmaxtradeprice) +
       theme_bw()
     
     plot +
