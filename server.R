@@ -181,7 +181,9 @@ function(input, output, session) {
     td_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
+  
   td_balance_df <- reactive({
+    # td_cp_t() %>% write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/td_cp_t.csv")
     # browser()
     req(td_plot_df())
     bal_df <- td_plot_df() %>% select(nno, datetimemlls,
