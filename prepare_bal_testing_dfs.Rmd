@@ -9,9 +9,9 @@ library(shiny)
 library(tidyverse)
 ```
 ```{r}
-obps_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obps.csv")
+# obps_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obps.csv")
 # obps_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-2007-10-08_obps.csv")
-# obps_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obps.csv")
+obps_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obps.csv")
 obps_df <- obps_df %>% 
   mutate(TIME_S = TIME/1000)
 obps_df
@@ -19,16 +19,16 @@ obps_df
 
 
 ```{r}
-order_atts_cumsums_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-GMKN-2007-10-08-09_order_atts_cumsums.csv")
+# order_atts_cumsums_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-GMKN-2007-10-08-09_order_atts_cumsums.csv")
 # order_atts_cumsums_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-2007-10-08_order_atts_cumsums.csv")
-# order_atts_cumsums_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_order_atts_cumsums.csv")
+order_atts_cumsums_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_order_atts_cumsums.csv")
 order_atts_cumsums_df
 ```
 
 ```{r}
-obp_cum_atts_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obp_cum_atts.csv")
+# obp_cum_atts_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obp_cum_atts.csv")
 # obp_cum_atts_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/LKOH-2007-10-08_obp_cum_atts.csv")
-# obp_cum_atts_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obp_cum_atts.csv")
+obp_cum_atts_df <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/s1_s2_2007_obp_cum_atts.csv")
 obp_cum_atts_df
 ```
 
@@ -44,30 +44,6 @@ order_atts_cumsums_enhanced_df <- left_join(order_atts_cumsums_df,
          sobp, bobp, max_sobp_bobp, minus_max_sobp_bobp, stday, btday, max_std_btd,
          minus_max_std_btd)
 order_atts_cumsums_enhanced_df
-```
-
-```{r}
-obp_minmax_tradeprice <- function(att, tradeprice, minmax) {
-  at_df <- tibble(att = att,
-                  tradeprice = tradeprice)
-  if (length(at_df %>%
-            filter(att == "BTVOL" | att == "STVOL") %>%
-            .$tradeprice)) {
-    if (minmax == "min") {
-      min(at_df %>%
-            filter(att == "BTVOL" | att == "STVOL") %>%
-            .$tradeprice %>%
-            cummin())
-    } else if (minmax == "max") {
-      max(at_df %>%
-            filter(att == "BTVOL" | att == "STVOL") %>%
-            .$tradeprice %>%
-            cummax())
-    } else quit()
-  } else {
-      NA
-  }
-}
 ```
 
 ```{r}
@@ -100,11 +76,86 @@ obp_cum_minmax_atts_df
 ```
 
 ```{r}
-
+oas_att_bst <- order_atts_cumsums_enhanced_df %>% 
+  select(NO, SECCODE, DATE, OBPLOTNO, ATT, TRADEPRICE) %>% 
+  filter(ATT == "BTVOL" | ATT == "STVOL")
+oas_att_bst
 ```
 
 ```{r}
-obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
+obp_minmax_tradeprice <- function(seccode, date, obplotno, 
+                                  obpbeginno, obpendno, minmax) {
+  print(paste(length(seccode),
+              length(date),
+              length(obplotno),
+              length(obpbeginno),
+              length(obpendno),
+              length(minmax)))
+  print(paste(seccode, date, obplotno, obpbeginno, obpendno, minmax))
+  seq(length(obplotno))
+  if (minmax == "min") {
+    mint <- min(oas_att_bst %>%
+                  filter(SECCODE == seccode & DATE == date & 
+                           NO >= obpbeginno & NO <= obpendno) %>% 
+                  .$TRADEPRICE %>%
+                  cummin())
+    print(mint)
+    mint
+  } else if (minmax == "max") {
+    maxt <- max(oas_att_bst %>%
+                  filter(SECCODE == seccode & DATE == date & 
+                           NO >= obpbeginno & NO <= obpendno) %>% 
+                  .$TRADEPRICE %>%
+                  cummax())
+    print(maxt)
+    maxt
+    
+  } else {
+    print(paste0("min or max only, not ", minmax))
+    stop()
+  }
+}
+```
+
+```{r}
+vextor_to_obp_minmax_tradeprice <- function(seccode, date, obplotno, 
+                                            obpbeginno, obpendno, minmax) {
+  tibble(seccode, date, obplotno, obpbeginno, obpendno, 
+         minmax = rep(minmax, length(obplotno))) %>% 
+    pmap(obp_minmax_tradeprice) %>% 
+    unlist()
+}
+```
+
+```{r}
+obp_cum_tprice_atts <- obp_cum_minmax_atts_df %>% 
+  # sample_n(20) %>% 
+  group_by(SECCODE, DATE) %>% 
+  summarise(OBPLOTNO = OBPLOTNO,
+            OBPMINTRADEPRICE = vextor_to_obp_minmax_tradeprice(SECCODE,
+                                                               DATE,
+                                                               OBPLOTNO,
+                                                               OBPBEGINNO,
+                                                               OBPENDNO,
+                                                               "min"),
+            OBPMAXTRADEPRICE = vextor_to_obp_minmax_tradeprice(SECCODE,
+                                                               DATE,
+                                                               OBPLOTNO,
+                                                               OBPBEGINNO,
+                                                               OBPENDNO,
+                                                               "max"))
+obp_cum_tprice_atts
+```
+
+```{r}
+obp_cum_minmax_tpminmax_atts_df <- left_join(obp_cum_minmax_atts_df,
+                                             obp_cum_tprice_atts,
+                                             by = c("SECCODE", "DATE", "OBPLOTNO"))
+obp_cum_minmax_tpminmax_atts_df
+```
+
+```{r}
+obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_tpminmax_atts_df,
                                   order_atts_cumsums_enhanced_df %>% select(SECCODE,
                                                                             DATE,
                                                                             OBPLOTNO,
@@ -114,7 +165,7 @@ obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
   select(SECCODE, DATE, OBPLOTNO, TRADEVOL, BUYSELLOBP,
          BPROFIT, SPROFIT,
          OBPBEGIN, OBPEND, OBPBEGINNO, OBPENDNO, OBPMINPRICE, OBPMAXPRICE,
-         TRADESNOTRADES) %>% #, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO) %>% 
+         OBPMINTRADEPRICE, OBPMAXTRADEPRICE, TRADESNOTRADES) %>% #, BUYSELLYIELD, OBPTDVOLRATIO, MINMAXRATIO) %>% 
   rename("seccode" = "SECCODE",
          "ddate" = "DATE",
          "obplotno" = "OBPLOTNO",
@@ -128,13 +179,12 @@ obp_cum_atts_enh_df <- inner_join(obp_cum_minmax_atts_df,
          "obpendno" = "OBPENDNO",
          "obpminprice" = "OBPMINPRICE",
          "obpmaxprice" = "OBPMAXPRICE",
+         "obpmintradeprice" = "OBPMINTRADEPRICE",
+         "obpmaxtradeprice" = "OBPMAXTRADEPRICE",
          "bprofit" = "BPROFIT",
          "sprofit" = "SPROFIT",
          "tradesnotrades" = "TRADESNOTRADES") %>% 
   distinct()
-         # "buysellyield" = "BUYSELLYIELD",
-         # "obptdvolratio" = "OBPTDVOLRATIO",
-         # "minmaxratio" = "MINMAXRATIO")
 obp_cum_atts_enh_df
 ```
 
