@@ -15,8 +15,6 @@ onStop(function() {
 })
 
 function(input, output, session) {
-  # order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
-  # obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
   order_atts_cumsums_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
   obp_cum_atts_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
   
@@ -60,10 +58,6 @@ function(input, output, session) {
   })
   
   cur_obplotno <- reactive({
-    # obplots_df()[1, 1] %>% 
-    #   unlist() %>% 
-    #   .[["obplotno"]]
-    # browser()
     selected <- input$obplots_rtbl_rows_selected
     # browser()
     if(length(selected)) {
@@ -121,44 +115,6 @@ function(input, output, session) {
       .$obpend
   })
   
-  pmintprice <- 0
-  pmaxtprice <- 0
-  obp_plot_df <- reactive({
-    # browser()
-    req(cur_ticker(), cur_date(), pbegin(), pend())
-    c_t <- cur_ticker()
-    c_d <- cur_date()
-    pb <- pbegin()
-    pe <- pend()
-    plot_df <- order_atts_cumsums_pg %>% 
-      filter(seccode == c_t & ddate == c_d & (datetimemlls >= pb & datetimemlls <= pe) & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>%
-      as_tibble()
-    # browser()
-    pmintprice <<- min(plot_df %>%
-                        filter(att == "BTVOL" | att == "STVOL") %>%
-                        .$tradeprice %>%
-                        cummin())
-    pmaxtprice <<- max(plot_df %>%
-                        filter(att == "BTVOL" | att == "STVOL") %>%
-                        .$tradeprice %>%
-                        cummax())
-    # plot_df <- plot_df %>%
-    #   filter(price >= pmintprice & price <= pmaxtprice)
-    
-    # plot_df <- plot_df %>%
-    #   filter(price > 2145.0 & price < 2205.0)
-    
-    plot_df[plot_df$obplotno == cur_obplotno() & plot_df$att == "BOVOL", "pcolor"] <- "darkgreen"
-    plot_df[plot_df$obplotno == cur_obplotno() & plot_df$att == "SOVOL", "pcolor"] <- "red"
-    plot_df[plot_df$obplotno == cur_obplotno() & plot_df$att == "BTVOL", "pcolor"] <- "#8031A7"
-    # plot_df[plot_df$obplotno == curplotno, "pshape"] <- 16
-    plot_df[, "pshape"] <- 16
-    plot_df[, "psize"] <- 1.0
-    plot_df[plot_df$obplotno == cur_obplotno(), "psize"] <- 2.0
-    plot_df[plot_df$obplotno != cur_obplotno() & plot_df$att == "BOVOL", "pcolor"] <- "green"
-    plot_df
-  })
-  
   tdmintprice <- 0
   tdmaxtprice <- 0
   obpmintradeprice <- 0
@@ -199,84 +155,30 @@ function(input, output, session) {
     td_plot_df
   })
   
-  obp_s <- reactive({
-    # browser()
-    req(obp_plot_df(), cur_obplotno())
-    obp_plot_df() %>% filter(obplotno != cur_obplotno() & att == "SOVOL")
-  })
-
   td_s <- reactive({
     # browser()
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno != cur_obplotno() & att == "SOVOL")
   })
   
-  obp_b <- reactive({
-    req(obp_plot_df(), cur_obplotno())
-    obp_plot_df() %>% filter(obplotno != cur_obplotno() & att == "BOVOL")
-  })
-
   td_b <- reactive({
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno != cur_obplotno() & att == "BOVOL")
   })
   
-  obp_t <- reactive({
-    req(obp_plot_df(), cur_obplotno())
-    obp_plot_df() %>% filter(obplotno != cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
-  })
-
   td_t <- reactive({
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno != cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
-  obp_cp_sb <- reactive({
-    req(obp_plot_df(), cur_obplotno())
-    obp_plot_df() %>% filter(obplotno == cur_obplotno() & att != "BTVOL" & att != "STVOL")
-  })
-
   td_cp_sb <- reactive({
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno == cur_obplotno() & att != "BTVOL" & att != "STVOL")
   })
   
-  obp_cp_t <- reactive({
-    req(obp_plot_df(), cur_obplotno())
-    obp_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
-  })
-
   td_cp_t <- reactive({
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
-  })
-  
-  obp_balance_df <- reactive({
-    # browser()
-    req(obp_plot_df())
-    bal_df <- obp_plot_df() %>% select(nno, datetimemlls,
-                                       sobp, bobp,
-                                       max_sobp_bobp, minus_max_sobp_bobp,
-                                       # stday, btday,
-                                       # max_std_btd, minus_max_std_btd,
-                                       obplotno)
-    # browser()
-    bal_df[bal_df$obplotno != cur_obplotno(),
-           c("sobp", "bobp", 
-             "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
-    # "stday", "btday",
-    # "max_std_btd", "minus_max_std_btd")] <- NA
-    # bal_df[bal_df$datetimemlls > pend(),
-    #        c("sobp", "bobp", 
-    #          "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
-    bal_df <- bal_df %>% 
-      select(-obplotno, -datetimemlls)
-    bal_df <- bal_df %>% fill(sobp, bobp, 
-                              max_sobp_bobp, minus_max_sobp_bobp) 
-    # stday, btday,
-    # max_std_btd, minus_max_std_btd)
-    # browser()
-    bal_df
   })
   
   td_balance_df <- reactive({
@@ -292,9 +194,6 @@ function(input, output, session) {
     bal_df[bal_df$obplotno != cur_obplotno(),
            c("sobp", "bobp", 
              "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
-    # bal_df[bal_df$datetimemlls > pend(),
-    #        c("sobp", "bobp", 
-    #          "max_sobp_bobp", "minus_max_sobp_bobp")] <- 0.0
     bal_df <- bal_df %>% 
       select(-obplotno, -datetimemlls)
     bal_df <- bal_df %>% fill(sobp, bobp, 
@@ -327,8 +226,11 @@ function(input, output, session) {
   })
   
   output$balance_obplot <- renderDygraph({
-    req(obp_balance_df())
-    dygraph(obp_balance_df()) %>%
+    req(td_balance_df())
+    dygraph(td_balance_df() %>% 
+              select(-stday, -btday,
+                     -max_std_btd, -minus_max_std_btd) %>% 
+              filter(nno >= obpbeginno & nno <= obpendno)) %>%
       dyOptions(fillGraph=TRUE, 
                 colors = c("red", "darkgreen", 
                            "gray", "gray"), 
