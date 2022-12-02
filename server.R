@@ -1,21 +1,29 @@
 options(digits.secs = 3)
-pool  <- dbPool(
-  drv = RPostgres::Postgres(),
-  dbname = Sys.getenv("dbname"),
-  host = Sys.getenv("host"),
-  # port = Sys.getenv("port"),
-  user = Sys.getenv("user"),
-  password = Sys.getenv("password")
-)
 
-onStop(function() {
-  # message("before close - is valid? ", DBI::dbIsValid(pool))
-  poolClose(pool)
-  # message("after close - is valid? ", DBI::dbIsValid(pool))
-})
+# onStop(function() {
+#   # message("before close - is valid? ", DBI::dbIsValid(pool))
+#   poolClose(pool)
+#   # message("after close - is valid? ", DBI::dbIsValid(pool))
+# })
 
 function(input, output, session) {
   just_launched <- TRUE
+
+  pool  <- dbPool(
+    drv = RPostgres::Postgres(),
+    dbname = Sys.getenv("dbname"),
+    host = Sys.getenv("host"),
+    # port = Sys.getenv("port"),
+    user = Sys.getenv("user"),
+    password = Sys.getenv("password")
+  )
+  
+  session$onSessionEnded(function() {
+    # message("before close - is valid? ", DBI::dbIsValid(pool))
+    poolClose(pool)
+    # message("after close - is valid? ", DBI::dbIsValid(pool))
+  })
+  
   #print("18 function(input, output, session) {")
   #browser()#
   order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
