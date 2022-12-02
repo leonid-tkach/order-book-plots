@@ -1,3 +1,4 @@
+just_launched <- TRUE
 options(digits.secs = 3)
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -15,12 +16,16 @@ onStop(function() {
 })
 
 function(input, output, session) {
+  #print("18 function(input, output, session) {")
+  #browser()#
   order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
   obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
   # order_atts_cumsums_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
   # obp_cum_atts_pg <- read_csv("../order-book-plot-find/cum_errors/resources/for_web_app/obp_cum_atts_enh_df.csv")
   
   tickers_l <- reactive({
+    #print("26 tickers_l <- reactive({")
+    #browser()#
     obp_cum_atts_pg %>%
       pull(seccode) %>%
       unique() %>%
@@ -29,6 +34,8 @@ function(input, output, session) {
   })
   
   dates_l <- reactive({
+    #print("36 dates_l <- reactive({")
+    #browser()#
     order_atts_cumsums_pg %>%
       pull(ddate) %>%
       unique() %>%
@@ -37,7 +44,8 @@ function(input, output, session) {
   })
   
   obplots_df <- reactive({
-    # browser()
+    #print("46 obplots_df <- reactive({")
+    #browser()#
     obplots_df <- obp_cum_atts_pg %>% 
       select(obplotno, buysellobp, obpshareintd, obpbegin, obpend, 
              obpbeginno, obpendno,
@@ -47,6 +55,7 @@ function(input, output, session) {
       filter(tradesnotrades == "Y") %>% 
       filter(seccode == cur_ticker(),
              ddate == cur_date())
+    # just_launched <<- FALSE
     obplots_df %>% 
       mutate(begin = format(obpbegin, format = "%H:%M:%S"), 
              end = format(obpend, format = "%H:%M:%S"),
@@ -60,49 +69,64 @@ function(input, output, session) {
   })
   
   cur_obplotno <- reactive({
+    #print("71 cur_obplotno <- reactive({")
+    #browser()#
     selected <- input$obplots_rtbl_rows_selected
-    # browser()
     if(length(selected)) {
-      return(
-        isolate(
-          obplots_df()[selected, "obplotno"] %>% 
-            unlist() %>% 
-            .[["obplotno"]]))
+      if(!just_launched) {
+        return(
+          isolate(
+            obplots_df()[selected, "obplotno"] %>% 
+              unlist() %>% 
+              .[["obplotno"]]))
+      } else {
+        just_launched <<- FALSE
+      }
     }
   })
   
   observeEvent(tickers_l, {
+    #print("84 observeEvent(tickers_l, {")
+    #browser()#
     updateRadioButtons(session, "tickers_rb", "Choose ticker:", 
                        choiceNames = tickers_l(), 
                        choiceValues = tickers_l())
   })
   
   cur_ticker <- reactive({
+    #print("92 cur_ticker <- reactive({")
+    #browser()#
     input$tickers_rb
   })
   
   observeEvent(dates_l, {
+    #print("98 observeEvent(dates_l, {")
+    #browser()#
     updateRadioButtons(session, "dates_rb", "Choose date:", 
                        choiceNames = dates_l(), 
                        choiceValues = dates_l())
   })
   
   cur_date <- reactive({
+    #print("106 cur_date <- reactive({")
+    #browser()#
     input$dates_rb
   })
   
   output$obplots_rtbl <- renderDT({
-    # browser()
-    datatable(obplots_df() %>% 
-      select(-obpshareintd, -tradesnotrades, -seccode, -ddate,
-             -obpbegin, -obpend),
-      options = list(pageLength = 5),
-      selection = list(mode = "single",
-                       selected = 1))
+    #print("112 output$obplots_rtbl <- renderDT({")
+    #browser()#
+    obplots_rtbl <- datatable(obplots_df() %>% 
+                                select(-obpshareintd, -tradesnotrades, -seccode, -ddate,
+                                       -obpbegin, -obpend),
+                              options = list(pageLength = 5),
+                              selection = list(mode = "single", selected = 1))
+    obplots_rtbl
   })
   
   pbegin <- reactive({
-    # browser()
+    #print("123 pbegin <- reactive({")
+    #browser()#
     req(obplots_df(), cur_ticker(), cur_date(), cur_obplotno())
     obplots_df() %>%
       filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
@@ -110,7 +134,8 @@ function(input, output, session) {
   })
   
   pend <- reactive({
-    # browser()
+    #print("132 pend <- reactive({")
+    #browser()#
     req(obplots_df(), cur_ticker(), cur_date(), cur_obplotno())
     obplots_df() %>%
       filter(seccode == cur_ticker() & ddate == cur_date() & obplotno == cur_obplotno()) %>% 
@@ -124,16 +149,15 @@ function(input, output, session) {
   obpbeginno <- 0
   obpendno <- 0
   td_plot_df <- reactive({
-    # browser()
+    #print("147 td_plot_df <- reactive({")
+    #browser()#
     req(cur_ticker(), cur_date(), pbegin(), pend())
     ct <- cur_ticker()
     cd <- cur_date()
-    # pb <- pbegin()
-    # pe <- pend()
     td_plot_df <- order_atts_cumsums_pg %>% 
       filter(seccode == ct & ddate == cd & (att == "BOVOL" | att == "SOVOL" | att == "BTVOL" | att == "STVOL")) %>%
       as_tibble()
-    # browser()
+    
     tdmintprice <<- min(obplots_df()$obpmintradeprice)
     tdmaxtprice <<- max(obplots_df()$obpmaxtradeprice)
     
@@ -162,35 +186,44 @@ function(input, output, session) {
   })
   
   td_s <- reactive({
-    # browser()
+    #print("184 td_s <- reactive({")
+    #browser()#
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno != cur_obplotno() & att == "SOVOL")
   })
   
   td_b <- reactive({
+    #print("191 td_b <- reactive({")
+    #browser()#
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno != cur_obplotno() & att == "BOVOL")
   })
   
   td_t <- reactive({
+    #print("198 td_t <- reactive({")
+    #browser()#
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno != cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
   td_cp_sb <- reactive({
+    #print("205 td_cp_sb <- reactive({")
+    #browser()#
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno == cur_obplotno() & att != "BTVOL" & att != "STVOL")
   })
   
   td_cp_t <- reactive({
+    #print("212 td_cp_t <- reactive({")
+    #browser()#
     req(td_plot_df(), cur_obplotno())
     td_plot_df() %>% filter(obplotno == cur_obplotno() & (att == "BTVOL" | att == "STVOL"))
   })
   
   
   td_balance_df <- reactive({
-    # td_cp_t() %>% write_csv("../order-book-plot-find/cum_errors/resources/for_web_app/td_cp_t.csv")
-    # browser()
+    #print("220 td_balance_df <- reactive({")
+    #browser()#
     req(td_plot_df())
     bal_df <- td_plot_df() %>% select(nno, datetimemlls,
                                       sobp, bobp,
@@ -198,7 +231,7 @@ function(input, output, session) {
                                       stday, btday,
                                       max_std_btd, minus_max_std_btd,
                                       obplotno)
-    # browser()
+    
     bal_df[bal_df$obplotno != cur_obplotno(),
            c("sobp", "bobp", 
              "max_sobp_bobp", "minus_max_sobp_bobp")] <- NA
@@ -206,13 +239,14 @@ function(input, output, session) {
       select(-obplotno, -datetimemlls)
     bal_df <- bal_df %>% fill(sobp, bobp, 
                               max_sobp_bobp, minus_max_sobp_bobp)
-    # browser()
     bal_df
   })
   
   output$obplot <- renderPlot({
-    # browser()
+    #print("241 output$obplot <- renderPlot({")
+    #browser()#
     req(td_s(), td_b(), td_t(), td_cp_sb(), td_cp_t())
+      
     plot <- ggplot() +
       geom_point(data = td_s(), mapping = aes(x = nno, y = price),# alpha = val),
                  color = td_s()$pcolor, shape = td_s()$pshape, size = td_s()$psize) +
@@ -234,6 +268,8 @@ function(input, output, session) {
   })
   
   output$balance_obplot <- renderDygraph({
+    #print("266 output$balance_obplot <- renderDygraph({")
+    #browser()#
     req(td_balance_df())
     dygraph(td_balance_df() %>% 
               select(-stday, -btday,
@@ -250,7 +286,8 @@ function(input, output, session) {
   })
 
   output$tdplot <- renderPlot({
-    # browser()
+    #print("284 output$tdplot <- renderPlot({")
+    #browser()#
     req(td_s(), td_b(), td_t(), td_cp_sb(), td_cp_t())
     plot <- ggplot() +
       geom_point(data = td_s(), mapping = aes(x = nno, y = price),# alpha = val),
@@ -266,12 +303,14 @@ function(input, output, session) {
       scale_x_continuous(expand = c(0, 0)) +
       ylim(tdmintprice, tdmaxtprice) +
       theme_bw()
-    
+
     plot +
       theme(plot.margin = margin(0, 0, 0, 1, "cm"))
   })
   
   output$balance_tdplot <- renderDygraph({
+    #print("307 output$balance_tdplot <- renderDygraph({")
+    #browser()#
     req(td_balance_df())
     dygraph(td_balance_df()) %>%
       dyOptions(fillGraph=TRUE, 
