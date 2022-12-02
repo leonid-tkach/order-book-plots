@@ -1,4 +1,3 @@
-just_launched <- TRUE
 options(digits.secs = 3)
 pool  <- dbPool(
   drv = RPostgres::Postgres(),
@@ -16,6 +15,7 @@ onStop(function() {
 })
 
 function(input, output, session) {
+  just_launched <- TRUE
   #print("18 function(input, output, session) {")
   #browser()#
   order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
