@@ -26,10 +26,10 @@ function(input, output, session) {
   
   #print("18 function(input, output, session) {")
   #browser()#
-  order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
-  obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
-  # order_atts_cumsums_pg <- read_csv("../order-book-plot-find/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
-  # obp_cum_atts_pg <- read_csv("../order-book-plot-find/resources/for_web_app/obp_cum_atts_enh_df.csv")
+  # order_atts_cumsums_pg <- pool %>% tbl("order_atts_cumsums")
+  # obp_cum_atts_pg <- pool %>% tbl("obp_cum_atts")
+  order_atts_cumsums_pg <- read_csv("../order-book-plot-find/resources/for_web_app/order_atts_cumsums_enh4_df.csv")
+  obp_cum_atts_pg <- read_csv("../order-book-plot-find/resources/for_web_app/obp_cum_atts_enh_df.csv")
   
   tickers_l <- reactive({
     #print("26 tickers_l <- reactive({")

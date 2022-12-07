@@ -9,9 +9,9 @@ library(shiny)
 library(tidyverse)
 ```
 ```{r}
-obps_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obps.csv")
+# obps_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obps.csv")
 # obps_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-2007-10-08_obps.csv")
-# obps_df <- read_csv("../order-book-plot-find/resources/for_web_app/s1_s2_2007_obps.csv")
+obps_df <- read_csv("../order-book-plot-find/resources/for_web_app/s1_s2_2007_obps.csv")
 obps_df <- obps_df %>% 
   mutate(TIME_S = TIME/1000)
 obps_df
@@ -19,16 +19,16 @@ obps_df
 
 
 ```{r}
-order_atts_cumsums_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-GMKN-2007-10-08-09_order_atts_cumsums.csv")
+# order_atts_cumsums_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-GMKN-2007-10-08-09_order_atts_cumsums.csv")
 # order_atts_cumsums_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-2007-10-08_order_atts_cumsums.csv")
-# order_atts_cumsums_df <- read_csv("../order-book-plot-find/resources/for_web_app/s1_s2_2007_order_atts_cumsums.csv")
+order_atts_cumsums_df <- read_csv("../order-book-plot-find/resources/for_web_app/s1_s2_2007_order_atts_cumsums.csv")
 order_atts_cumsums_df
 ```
 
 ```{r}
-obp_cum_atts_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obp_cum_atts.csv")
+# obp_cum_atts_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-GMKN-2007-10-08-09_obp_cum_atts.csv")
 # obp_cum_atts_df <- read_csv("../order-book-plot-find/resources/for_web_app/LKOH-2007-10-08_obp_cum_atts.csv")
-# obp_cum_atts_df <- read_csv("../order-book-plot-find/resources/for_web_app/s1_s2_2007_obp_cum_atts.csv")
+obp_cum_atts_df <- read_csv("../order-book-plot-find/resources/for_web_app/s1_s2_2007_obp_cum_atts.csv")
 obp_cum_atts_df
 ```
 

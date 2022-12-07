@@ -17,3 +17,21 @@ order_atts_cumsums_df <- read_csv("../order-book-plot-find/resources/for_web_app
 order_atts_cumsums_df
 ```
 
+```{r}
+order_atts_cumsums_df %>% 
+  group_by(seccode, ddate) %>% 
+  count(seccode)
+```
+
+```{r}
+obp_cum_atts_df %>% 
+  group_by(seccode, ddate) %>% 
+  count(seccode)
+```
+
+```{r}
+obp_cum_atts_df %>% 
+  filter(tradesnotrades == "Y") %>% 
+  group_by(seccode, ddate) %>% 
+  count(seccode)
+```
