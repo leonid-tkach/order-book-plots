@@ -10,7 +10,7 @@ Technologies I used:
 
 TECHS|I USED
 ---|---
-|<img src="./pres/0Python.png" width="60">|Python: finding obplots (connected components) and add them to log files.<br>*I used: pandas, os, regex, time, pandas, datetime, matplotlib.*
+|<img src="./pres/0Python.png" width="50">|Python: finding obplots (connected components) and add them to log files.<br>*I used: pandas, os, regex, time, pandas, datetime, matplotlib.*
 |<img src="./pres/0R.png" width="50">|R: some extra data tidying, drawing plots.<br>*I used: tidyverse (ggplot, dplyr, tidyr), shiny, DBI, RPostgres, pool, dygrpahs, DT.*
 |<img src="./pres/0RShiny.png" width="50">|R Shiny: web application.
 |<img src="./pres/0AWS.png" width="50">|Amazon Web Services: deploying my web application.<br>*I used: EC2 (for Shiny Server), RDS (for PostgreSQL), Route 53 (to register domain).*
