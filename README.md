@@ -1,6 +1,6 @@
 # order-book-plots
 
-Web App: https://orderbookplots.sleepyapper.com/
+Web App: https://orderbookplots.sleepyapper.com/. **The servers operate exclusively during weekdays from 8 AM to 8 PM Eastern Standard Time (EST).**
 
 The presentation about this project: https://docs.google.com/presentation/d/1i27WkaikonMWRYUc3aiEB2DqW2aQznqykuqXclO93ko/edit#slide=id.g1a7e7bd42c3_1_92
 
